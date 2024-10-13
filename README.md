@@ -1,4 +1,5 @@
-![HBNB EVOLUTION](https://github.com/user-attachments/assets/545e0e09-1e67-4b6f-8d46-f02e7a217e61)
+
+![HBNB BANNER](https://github.com/user-attachments/assets/26bfe7b6-cdf6-479a-90de-4d41d1bd740e)
 
 # Holberton AirBNB Clone
 
