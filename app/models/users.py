@@ -18,3 +18,45 @@ class User(BaseModel):
     def add_place(self, place):
         """Add an amenity to the place."""
         self.places.append(place)
+
+    @property
+    def first_name(self):
+        return self.first_name
+
+    @first_name.setter
+    def first_name(self, first_name):
+        if len(first_name) <= 50:
+            self.first_name = first_name
+        else:
+            ValueError("first_name maximum length of 50 characters")
+
+    @property
+    def last_name(self):
+        return self.last_name
+
+    @last_name.setter
+    def last_name(self, last_name):
+        if len(last_name) <= 50:
+            self.last_name = last_name
+        else:
+            raise ValueError("last_name maximum length of 50 characters")
+
+    @property
+    def email(self):
+        return self.email
+
+    @email.setter
+    def email(self, email):
+        # regex = [^@]+@[^@]+\.[^@]+
+        if '@' in email:
+            self.email = email
+        else:
+            raise ValueError("email must be unique, and should follow standard email format")
+
+    @property
+    def is_admin(self):
+        return self.is_admin
+
+    @is_admin.setter
+    def is_admin(self, is_admin=False):
+        return self.is_admin
