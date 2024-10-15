@@ -20,64 +20,64 @@ class Place(BaseModel):
         return self._title
 
     @title.setter
-    def title(self, title):
-        if len(title) <= 100:
-            self._title = title
+    def title(self, value):
+        if len(value) <= 100:
+            self._title = value
         else:
-            ValueError("title maximum length of 50 characters")
+            ValueError("Title maximum length of 100 characters")
 
     @property
     def description(self):
         return self._description
 
     @description.setter
-    def description(self, description):
-        if description is None or isinstance(description, str):
-            self._description = description
+    def description(self, value):
+        if value is None or isinstance(value, str):
+            self._description = value
         else:
-            ValueError("Description must be a string or None")
+            raise ValueError("Description must be a string or None")
 
     @property
     def price(self):
         return self._price
 
     @price.setter
-    def price(self, price):
-        if isinstance(price, float) and price > 0:
-            self._price = price
+    def price(self, value):
+        if isinstance(value, float) and value > 0:
+            self._price = value
         else:
-            ValueError("price must be a positive value")
+            raise ValueError("Price must be a positive value")
 
     @property
     def latitude(self):
         return self._latitude
 
     @latitude.setter
-    def latitude(self, latitude):
-        if isinstance(latitude, float) and -90.0 <= latitude <= 90.0:
-            self._latitude = latitude
+    def latitude(self, value):
+        if isinstance(value, float) and -90.0 <= value <= 90.0:
+            self._latitude = value
         else:
-            ValueError("latitude must be within the range of -90.0 to 90.0")
+            raise ValueError("Latitude must be within the range of -90.0 to 90.0")
 
     @property
-    def longtitude(self):
-        return self._longtitude
+    def longitude(self):
+        return self._longitude
 
-    @longtitude.setter
-    def longtitude(self, longtitude):
-        if isinstance(longtitude, float) and -180.0 <= longtitude <= 180.0:
-            self._longtitude = longtitude
+    @longitude.setter
+    def longitude(self, value):
+        if isinstance(value, float) and -180.0 <= value <= 180.0:
+            self._longitude = value
         else:
-            ValueError("longtitude must be within the range of -180.0 to 180.0")
+            raise ValueError("Longitude must be within the range of -180.0 to 180.0")
 
     @property
     def owner(self):
         return self._owner
 
     @owner.setter
-    def owner(self, owner):
-        if isinstance(owner, User): ### not sure if this is correct
-            self._owner = owner
+    def owner(self, value):
+        if isinstance(value, User):
+            self._owner = value
         else:
             raise ValueError("User must be an instance of User.")
 
