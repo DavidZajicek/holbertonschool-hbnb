@@ -1,8 +1,8 @@
 #!/usr/bin/python3
-from __init__ import BaseModel
+from base import BaseModel
 
 class User(BaseModel):
-    def __init__(self, first_name, last_name, email, is_admin):
+    def __init__(self, first_name, last_name, email, is_admin=False):
         super().__init__()
         self.first_name = first_name # maximum length of 50 characters.
         self.last_name = last_name # maximum length of 50 characters.
@@ -21,14 +21,14 @@ class User(BaseModel):
 
     @property
     def first_name(self):
-        return self.first_name
+        return self._first_name
 
     @first_name.setter
     def first_name(self, first_name):
         if len(first_name) <= 50:
             self.first_name = first_name
         else:
-            ValueError("first_name maximum length of 50 characters")
+            raise ValueError("first_name maximum length of 50 characters")
 
     @property
     def last_name(self):
@@ -58,5 +58,8 @@ class User(BaseModel):
         return self.is_admin
 
     @is_admin.setter
-    def is_admin(self, is_admin=False):
-        return self.is_admin
+    def is_admin(self, value):
+        if isinstance(value, bool):
+            self.is_admin = value
+        else:
+            raise ValueError("is_admin must be a boolean value")

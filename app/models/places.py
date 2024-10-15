@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-from __init__ import BaseModel
+from base import BaseModel
 
 class Place(BaseModel):
     def __init__(self, title, description, price, latitude, longitude, owner):
@@ -13,13 +13,13 @@ class Place(BaseModel):
         self.reviews = []  # List to store related reviews
         self.amenities = []  # List to store related amenities
 
-    # def add_review(self, review):
-    #     """Add a review to the place."""
-    #     self.reviews.append(review)
+    def add_review(self, review):
+        """Add a review to the place."""
+        self.reviews.append(review)
 
-    # def add_amenity(self, amenity):
-    #     """Add an amenity to the place."""
-    #     self.amenities.append(amenity)
+    def add_amenity(self, amenity):
+        """Add an amenity to the place."""
+        self.amenities.append(amenity)
 
     @property
     def title(self):
@@ -32,7 +32,16 @@ class Place(BaseModel):
         else:
             ValueError("title maximum length of 50 characters")
 
-    # description
+    @property
+    def description(self):
+        return self.description
+
+    @description.setter
+    def description(self, description):
+        if description is None or isinstance(description, str):
+            self.description = description
+        else:
+            ValueError("Description must be a string or None")
 
     @property
     def price(self):
@@ -71,7 +80,7 @@ class Place(BaseModel):
 
     @property
     def owner(self):
-        return self.price
+        return self.owner
 
     @owner.setter
     def owner(self, owner):

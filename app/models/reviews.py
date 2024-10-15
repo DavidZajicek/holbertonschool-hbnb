@@ -1,6 +1,7 @@
 #!/usr/bin/python3
-from __init__ import BaseModel
-from app.models.__init__ import BaseModel
+from app.models.base import BaseModel
+from app.models.places import Place
+from app.models.users import User
 
 class Review(BaseModel):
     def __init__(self, text, rating, place, user):
@@ -10,6 +11,17 @@ class Review(BaseModel):
         self.place = place # Place id
         self.user = user # User id
         # relationships many - many
+
+    @property
+    def text(self):
+        return self.text
+
+    @text.setter
+    def text(self, text):
+        if isinstance(text, str) and text is not None:
+            self.text = text
+        else:
+            ValueError("Text is required and must be a string")
 
     @property
     def rating(self):
@@ -22,5 +34,23 @@ class Review(BaseModel):
         else:
             ValueError("rating must be between 1 and 5.")
 
-# place (Place): Place instance being reviewed. Must be validated to ensure the place exists.
-# user (User): User instance of who wrote the review. Must be validated to ensure the user exists
+    def place(self):
+        return self.place
+
+    @place.setter
+    def place(self, place):
+        if isinstance(place, Place):
+            self.place = place
+        else:
+            raise ValueError("place must be validated to ensure the place exists")
+
+    @property
+    def user(self):
+        return self.user
+
+    @user.setter
+    def user(self, user):
+        if isinstance(user, user):
+            self.user = user
+        else:
+            raise ValueError("user must be validated to ensure the place exists")
