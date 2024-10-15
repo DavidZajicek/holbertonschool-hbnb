@@ -16,9 +16,9 @@ class User(BaseModel):
         return self._first_name
 
     @first_name.setter
-    def first_name(self, first_name):
-        if len(first_name) <= 50:
-            self.first_name = first_name
+    def first_name(self, value):
+        if len(value) <= 50:
+            self._first_name = value
         else:
             raise ValueError("first_name maximum length of 50 characters")
 
@@ -27,9 +27,9 @@ class User(BaseModel):
         return self._last_name
 
     @last_name.setter
-    def last_name(self, last_name):
-        if len(last_name) <= 50:
-            self._last_name = last_name
+    def last_name(self, value):
+        if len(value) <= 50:
+            self._last_name = value
         else:
             raise ValueError("last_name maximum length of 50 characters")
 
@@ -38,12 +38,12 @@ class User(BaseModel):
         return self._email
 
     @email.setter
-    def email(self, email):
+    def email(self, value):
         # regex = [^@]+@[^@]+\.[^@]+
-        if '@' in email:
-            self._email = email
+        if '@' in value:
+            self._email = value
         else:
-            raise ValueError("email must be unique, and should follow standard email format")
+            raise ValueError("Email must be unique, and should follow standard email format")
 
     @property
     def is_admin(self):
