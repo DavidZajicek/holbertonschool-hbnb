@@ -16,9 +16,9 @@ class Review(BaseModel):
         return self._text
 
     @text.setter
-    def text(self, text):
-        if isinstance(text, str) and text is not None:
-            self._text = text
+    def text(self, value):
+        if isinstance(value, str) and value is not None:
+            self._text = value
         else:
             raise ValueError("Text is required and must be a string")
 
@@ -27,30 +27,30 @@ class Review(BaseModel):
         return self._rating
 
     @rating.setter
-    def rating(self, rating):
-        if 1 <= rating <= 5:
-            self._rating = rating
+    def rating(self, value):
+        if 1 <= value <= 5:
+            self._rating = value
         else:
-            raise ValueError("Rating must be between 1 and 5.")
+            raise ValueError("Rating must be between 1 and 5")
 
     @property
     def place(self):
         return self._place
 
     @place.setter
-    def place(self, place):
-        if isinstance(place, Place):  # Ensure place is an instance of Place
-            self._place = place
+    def place(self, value):
+        if isinstance(value, Place):  # Ensure place is an instance of Place
+            self._place = value
         else:
-            raise ValueError("Place must be an instance of Place.")
+            raise ValueError("Place must be a valid Place instance.")
 
     @property
     def user(self):
         return self._user
 
     @user.setter
-    def user(self, user):
-        if isinstance(user, User):  # Ensure user is an instance of User
-            self._user = user
+    def user(self, value):
+        if isinstance(value, User):  # Ensure user is an instance of User
+            self._user = value
         else:
-            raise ValueError("User must be an instance of User.")
+            raise ValueError("User must be a valid User.")
