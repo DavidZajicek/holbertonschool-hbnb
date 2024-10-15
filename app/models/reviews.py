@@ -6,51 +6,51 @@ from app.models.users import User
 class Review(BaseModel):
     def __init__(self, text, rating, place, user):
         super().__init__()
-        self.text = text
-        self.rating = rating
-        self.place = place # Place id
-        self.user = user # User id
-        # relationships many - many
+        self._text = text
+        self._rating = rating
+        self._place = place  # Place instance
+        self._user = user    # User instance
 
     @property
     def text(self):
-        return self.text
+        return self._text
 
     @text.setter
     def text(self, text):
         if isinstance(text, str) and text is not None:
-            self.text = text
+            self._text = text
         else:
-            ValueError("Text is required and must be a string")
+            raise ValueError("Text is required and must be a string")
 
     @property
     def rating(self):
-        return self.rating
+        return self._rating
 
     @rating.setter
     def rating(self, rating):
         if 1 <= rating <= 5:
-            self.rating = rating
+            self._rating = rating
         else:
-            ValueError("rating must be between 1 and 5.")
+            raise ValueError("Rating must be between 1 and 5.")
 
+    @property
     def place(self):
-        return self.place
+        return self._place
 
     @place.setter
     def place(self, place):
-        if isinstance(place, Place):
-            self.place = place
+        if isinstance(place, Place):  # Ensure place is an instance of Place
+            self._place = place
         else:
-            raise ValueError("place must be validated to ensure the place exists")
+            raise ValueError("Place must be an instance of Place.")
 
     @property
     def user(self):
-        return self.user
+        return self._user
 
     @user.setter
     def user(self, user):
-        if isinstance(user, user):
-            self.user = user
+        if isinstance(user, User):  # Ensure user is an instance of User
+            self._user = user
         else:
-            raise ValueError("user must be validated to ensure the place exists")
+            raise ValueError("User must be an instance of User.")
