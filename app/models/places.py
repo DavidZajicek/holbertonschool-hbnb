@@ -21,10 +21,10 @@ class Place(BaseModel):
 
     @title.setter
     def title(self, title):
-        if len(title) <= 100:
+        if title and len(title) <= 100:
             self._title = title
         else:
-            ValueError("title maximum length of 50 characters")
+            ValueError("title maximum length of 100 characters")
 
     @property
     def description(self):
