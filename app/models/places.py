@@ -90,3 +90,23 @@ class Place(BaseModel):
     def add_amenity(self, amenity):
         """Add an amenity to the place."""
         self.amenities.append(amenity)
+
+    def toJSON(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "description": self.description,
+            "price": self.price,
+            "latitude": self.latitude,
+            "longitude": self.longitude,
+            "owner": {
+                "id": "place_holder",
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@example.com",
+            },
+            "amenities": self.amenities,
+            "reviews": self.reviews,
+            "created_at": str(self.created_at),
+            "updated_at": str(self.updated_at),
+        }

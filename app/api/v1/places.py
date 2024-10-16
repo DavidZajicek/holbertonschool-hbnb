@@ -41,15 +41,7 @@ class PlaceList(Resource):
         place_data = api.payload
         new_place = facade.create_place(place_data)
         if new_place:
-            return {
-                'id': new_place.id,
-                'title': new_place.title,
-                'description': new_place.description,
-                'price': new_place.price,
-                'latitude': new_place.latitude,
-                'longitude': new_place.longitude,
-                # 'owner_id': new_place.owner.id
-            }, 201
+            return new_place, 201
         api.abort(400)
 
     @api.response(200, 'List of places retrieved successfully')

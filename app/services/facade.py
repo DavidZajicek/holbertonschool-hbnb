@@ -33,41 +33,19 @@ class HBnBFacade:
                 owner=User('place_holder', 'place_holder', 'placeholder'))
             # owner=self.get_user(place_data['owner_id']))
             self.place_repo.add(place)
-            return place
+            return place.toJSON()
         except KeyError:
             return None
 
     def get_place(self, place_id):
         place: Place = self.place_repo.get(place_id)
         if place:
-            return {
-                "id": place.id,
-                "title": place.title,
-                "description": place.description,
-                "price": place.price,
-                "latitude": place.latitude,
-                "longitude": place.longitude,
-                "owner": {
-                    "id": "place_holder",
-                    "first_name": "John",
-                    "last_name": "Doe",
-                    "email": "john.doe@example.com",
-                },
-                "amenities": list(place.amenities),
-                "created_at": str(place.created_at),
-                "updated_at": str(place.updated_at),
-            }
+            return place.toJSON()
 
     def get_all_places(self):
         places = []
         for place in self.place_repo.get_all():
-            places.append({
-                "id": place.id,
-                "title": place.title,
-                "description": place.description,
-                "latitude": place.latitude,
-                "longitude": place.longitude,
-            })
+            places.append(place.toJSON())
         return places
 
     def update_place(self, place_id, place_data):
@@ -76,18 +54,4 @@ class HBnBFacade:
         except (KeyError, ValueError):
             pass
         place = self.place_repo.get(place_id)
-        return {
-            "id": place.id,
-            "title": place.title,
-            "description": place.description,
-            "price": place.price,
-            "latitude": place.latitude,
-            "longitude": place.longitude,
-            "owner": {
-                "id": "place_holder",
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@example.com",
-            },
-            "amenities": list(place.amenities)
-        }
+        return place.toJSON()
