@@ -52,30 +52,42 @@ class UserResource(Resource):
             }, 200
 
 @api.route('/users/')
-class UserList(Resource):
-   @api.response(200, 'List of users retrieved successfully')
-   @api.response(404, 'No users found')
-    #implementing the retireval of the list of the us
+class ListUsers(Resource):
+    @api.response(200, 'List of users retrieved successfully')
+    @api.response(404, 'No users found')
     def get(self):
-        "Retrieves a list of all users"
+        """Retrieves a list of all users"""
         users = facade.get_all_users()
         if not users:
             return {'error': 'No users found'}, 400
-        
+   
         users_list = [{
             'id': user.id, 
             'first_name': user.first_name, 
             'last_name': user.last_name, 
             'email': user.email
             } for user in users]
-        
+
         return users_list
 
 @api.route('/<user_id>')
-class UpdateUser:
+class UpdateUser(Resource):
     @api.response(200, 'User updated successfully')
     @api.response(404, 'Update cannot be processed')
     #updating user information
-    def put(self):
-        "Updates information of a User"
+    def put(self, user_id):
+        "Updates information of a User by ID"
+        #Retrieve the updated data of the user
+        user_data = api.payload
         
+        user = facade.get_user(user_id)
+        if not user:
+            return {'error': 'No user found'}, 400
+        
+        updated_user = facade.update_user(user_id, user_data)
+        return {
+            'id', updated_user.id,
+            'first_name', updated_user.first_name,
+            'last_name', updated_user.last_name,
+            'email', updated_user.email
+        }, 200

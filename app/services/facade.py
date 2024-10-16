@@ -28,12 +28,13 @@ class HBnBFacade:
 
     def update_user(self, user_id, user_data):
         """Update an existing user"""
-        user = user_repo.get(user_id)
+        user = self.user_repo.get(user_id)
         if not user:
             return None
 
         self.user_repo.update(user_id, user_data)
-        return user
+        updated_user = self.user_repo.get(user_id)
+        return updated_user
 
     # Placeholder method for fetching a place by ID
     def get_place(self, place_id):
