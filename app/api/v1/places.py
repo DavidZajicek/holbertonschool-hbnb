@@ -40,15 +40,17 @@ class PlaceList(Resource):
         """Register a new place"""
         place_data = api.payload
         new_place = facade.create_place(place_data)
-        return {
-            'id': new_place.id,
-            'title': new_place.title,
-            'description': new_place.description,
-            'price': new_place.price,
-            'latitude': new_place.latitude,
-            'longitude': new_place.longitude,
-            # 'owner_id': new_place.owner.id
-        }, 201
+        if new_place:
+            return {
+                'id': new_place.id,
+                'title': new_place.title,
+                'description': new_place.description,
+                'price': new_place.price,
+                'latitude': new_place.latitude,
+                'longitude': new_place.longitude,
+                # 'owner_id': new_place.owner.id
+            }, 201
+        api.abort(400)
 
     @api.response(200, 'List of places retrieved successfully')
     def get(self):
@@ -62,8 +64,10 @@ class PlaceResource(Resource):
     @api.response(404, 'Place not found')
     def get(self, place_id):
         """Get place details by ID"""
-        # Placeholder for the logic to retrieve a place by ID, including associated owner and amenities
-        return facade.get_place(place_id)
+        place = facade.get_place(place_id)
+        if place:
+            return place
+        api.abort(404)
 
     @api.expect(place_model)
     @api.response(200, 'Place updated successfully')
@@ -71,5 +75,7 @@ class PlaceResource(Resource):
     @api.response(400, 'Invalid input data')
     def put(self, place_id):
         """Update a place's information"""
-        # Placeholder for the logic to update a place by ID
-        pass
+        place = facade.get_place(place_id)
+        if place:
+            return facade.update_place(place_id, api.payload)
+        api.abort(404)
