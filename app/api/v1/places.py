@@ -42,7 +42,7 @@ class PlaceList(Resource):
         new_place = facade.create_place(place_data)
         if new_place:
             return new_place, 201
-        api.abort(400)
+        return {'error': 'Invalid input data'}, 400
 
     @api.response(200, 'List of places retrieved successfully')
     def get(self):
@@ -59,7 +59,7 @@ class PlaceResource(Resource):
         place = facade.get_place(place_id)
         if place:
             return place
-        api.abort(404)
+        return {'error': 'Place not found'}, 404
 
     @api.expect(place_model)
     @api.response(200, 'Place updated successfully')
@@ -68,6 +68,11 @@ class PlaceResource(Resource):
     def put(self, place_id):
         """Update a place's information"""
         place = facade.get_place(place_id)
-        if place:
-            return facade.update_place(place_id, api.payload)
-        api.abort(404)
+        if not place:
+            return {'error': 'Place not found'}, 404
+
+        new_place = facade.update_place(place_id, api.payload)
+
+        if not new_place:
+            return {'error': 'Invalid input data'}, 400
+        return new_place

@@ -21,10 +21,13 @@ class Place(BaseModel):
 
     @title.setter
     def title(self, value):
-        if len(value) <= 100:
-            self._title = value
-        else:
-            raise ValueError("Title maximum length of 100 characters")
+        try:
+            if len(value) <= 100:
+                self._title = value
+            else:
+                raise ValueError("Title maximum length of 100 characters")
+        except TypeError:
+            raise TypeError("Title must be a string")
 
     @property
     def description(self):
@@ -81,7 +84,7 @@ class Place(BaseModel):
         if isinstance(value, User):
             self._owner = value
         else:
-            raise ValueError("User must be an instance of User.")
+            raise ValueError("User must be a valid instance of User.")
 
     def add_review(self, review):
         """Add a review to the place."""

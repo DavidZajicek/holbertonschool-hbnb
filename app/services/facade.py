@@ -52,6 +52,6 @@ class HBnBFacade:
         try:
             self.place_repo.update(place_id, place_data)
         except (KeyError, ValueError):
-            pass
+            return None
         place = self.place_repo.get(place_id)
         return place.toJSON()
