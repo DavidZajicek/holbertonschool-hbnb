@@ -18,6 +18,9 @@ facade = HBnBFacade()
 
 # TESTING - GET
 # curl -X GET http://localhost:5000/api/v1/amenities/<amenity_id>
+
+# TESTING - PUT(UPDATE)
+# curl -X PUT http://localhost:5000/api/v1/amenities/d8110fb6-d595-43bf-8f2a-1803f1140cae -H "Content-Type: application/json" -d '{"name": "Wifi"}'
 @api.route('/')
 class AmenityList(Resource):
     @api.expect(amenity_model)
