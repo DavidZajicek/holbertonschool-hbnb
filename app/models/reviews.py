@@ -3,6 +3,7 @@ from app.models.base import BaseModel
 from app.models.places import Place
 from app.models.users import User
 
+
 class Review(BaseModel):
     def __init__(self, text, rating, place, user):
         super().__init__()

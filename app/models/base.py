@@ -2,11 +2,12 @@
 import uuid
 from datetime import datetime
 
+
 class BaseModel:
     def __init__(self):
-        self.id = str(uuid.uuid4()) # generate a unique identifier
-        self.created_at = datetime.now() # timestamp
-        self.updated_at = datetime.now() # timestamp
+        self.id = str(uuid.uuid4())  # generate a unique identifier
+        self.created_at = datetime.now()  # timestamp
+        self.updated_at = datetime.now()  # timestamp
 
     def save(self):
         """Update the updated_at timestamp whenever the object is modified"""

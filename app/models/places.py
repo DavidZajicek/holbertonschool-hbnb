@@ -1,6 +1,7 @@
 #!/usr/bin/python3
-from base import BaseModel
+from app.models.base import BaseModel
 from app.models.users import User
+
 
 class Place(BaseModel):
     def __init__(self, title, description, price, latitude, longitude, owner):
@@ -10,10 +11,9 @@ class Place(BaseModel):
         self._price = price
         self._latitude = latitude
         self._longitude = longitude
-        self._owner = owner # User id
+        self._owner = owner  # User id
         self.reviews = []  # List to store related reviews
         self.amenities = []  # List to store related amenities
-
 
     @property
     def title(self):
@@ -24,7 +24,7 @@ class Place(BaseModel):
         if len(value) <= 100:
             self._title = value
         else:
-            ValueError("Title maximum length of 100 characters")
+            raise ValueError("Title maximum length of 100 characters")
 
     @property
     def description(self):
@@ -57,7 +57,8 @@ class Place(BaseModel):
         if isinstance(value, float) and -90.0 <= value <= 90.0:
             self._latitude = value
         else:
-            raise ValueError("Latitude must be within the range of -90.0 to 90.0")
+            raise ValueError(
+                "Latitude must be within the range of -90.0 to 90.0")
 
     @property
     def longitude(self):
@@ -68,7 +69,8 @@ class Place(BaseModel):
         if isinstance(value, float) and -180.0 <= value <= 180.0:
             self._longitude = value
         else:
-            raise ValueError("Longitude must be within the range of -180.0 to 180.0")
+            raise ValueError(
+                "Longitude must be within the range of -180.0 to 180.0")
 
     @property
     def owner(self):
