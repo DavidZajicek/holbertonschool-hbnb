@@ -1,0 +1,15 @@
+[
+    {
+        "id": "48e112fa-0f61-4585-86d9-3c6dd0600fca",
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "john.doe@example.com"
+    }
+]
+--_curl_--
+>          "first_name": "John"
+--_curl_--
+>          "last_name": "Doe"
+--_curl_--
+      ">          "email": "john.doe@example.com"
+>      

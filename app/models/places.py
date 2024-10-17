@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-from .base import BaseModel
+from app.models.base import BaseModel
 from app.models.users import User
 
 class Place(BaseModel):
@@ -10,9 +10,9 @@ class Place(BaseModel):
         self._price = price
         self._latitude = latitude
         self._longitude = longitude
-        self._owner = owner # User id
-        self.reviews = []  # List to store related reviews
-        self.amenities = []  # List to store related amenities
+        self._owner_id = id  # Changed _owner to _owner_id
+        self.reviews = []
+        self.amenities = []
 
     @property
     def title(self):

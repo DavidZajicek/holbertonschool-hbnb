@@ -1,13 +1,13 @@
-#!/usr/bin/python3
 from app.models.base import BaseModel
+import re
 
 class User(BaseModel):
     def __init__(self, first_name, last_name, email, is_admin=False):
         super().__init__()
-        self._first_name = first_name # maximum length of 50 characters.
-        self._last_name = last_name # maximum length of 50 characters.
-        self._email = email # Required, must be unique, and should follow standard @email format validation.
-        self._is_admin = is_admin  # Defaults to False
+        self._first_name = first_name
+        self._last_name = last_name
+        self._email = email
+        self._is_admin = is_admin
         self.reviews = []
         self.places = []
 
@@ -39,7 +39,6 @@ class User(BaseModel):
 
     @email.setter
     def email(self, value):
-        # regex = [^@]+@[^@]+\.[^@]+
         if value and re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', value):
             self._email = value
         else:
@@ -57,9 +56,9 @@ class User(BaseModel):
             raise ValueError("is_admin must be a boolean value")
 
     def add_review(self, review):
-        """Add a review to the place."""
+        """Add a review to the user's reviews."""
         self.reviews.append(review)
 
     def add_place(self, place):
-        """Add an amenity to the place."""
+        """Add a place to the user's places."""
         self.places.append(place)
