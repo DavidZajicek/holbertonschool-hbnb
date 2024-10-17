@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-from base import BaseModel
+from .base import BaseModel
 from app.models.users import User
 
 class Place(BaseModel):

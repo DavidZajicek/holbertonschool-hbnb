@@ -4,7 +4,7 @@ from app.models.base import BaseModel
 class Amenity(BaseModel):
     def __init__(self, name):
         super().__init__()
-        self._name = name
+        self.name = name
 
     @property
     def name(self):
@@ -13,7 +13,6 @@ class Amenity(BaseModel):
     @name.setter
     def name(self, value):
 
-        if len(value) > 50: # need to make this condition work
+        if len(value) > 50:
             raise ValueError("Name must be a maximum length of 50 characters")
         self._name = value
-

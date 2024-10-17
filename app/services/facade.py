@@ -41,22 +41,6 @@ class HBnBFacade:
     def __init__(self):
         self.amenities = []
 
-    # def create_amenity(self, amenity_data):
-    #     name = amenity_data.get('name')
-    #     if not name:
-    #         raise ValueError("Amenity name is required")
-
-    #     existing_amenity = self.get_amenity_by_name(name)
-    #     if existing_amenity:
-    #         raise ValueError("Amenity name alreasy exists")
-    #     try:
-    #         new_amenity = Amenity(name)  # This will trigger the setter
-    #     except ValueError as e:
-    #         raise ValueError(str(e))
-
-    #     new_amenity = Amenity(name)
-    #     self.amenities.append(new_amenity)
-    #     return new_amenity
     def create_amenity(self, amenity_data):
         name = amenity_data.get('name')
         if not name:
@@ -66,7 +50,6 @@ class HBnBFacade:
         if existing_amenity:
             raise ValueError("Amenity name already exists")
 
-        # Now this will trigger the name validation
         new_amenity = Amenity(name)
         self.amenities.append(new_amenity)
         return new_amenity
