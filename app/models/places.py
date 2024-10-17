@@ -10,7 +10,8 @@ class Place(BaseModel):
         self._price = price
         self._latitude = latitude
         self._longitude = longitude
-        self._owner_id = id  # Changed _owner to _owner_id
+        self._owner = owner
+        self._owner_id = owner.id  # Changed _owner to _owner_id
         self.reviews = []
         self.amenities = []
 
@@ -77,8 +78,9 @@ class Place(BaseModel):
     def owner(self, value):
         if isinstance(value, User):
             self._owner = value
+            self._owner_id = value.id  # Assign the user's id to _owner_id
         else:
-            raise ValueError("User must be an instance of User.")
+            raise ValueError("Owner must be an instance of User")
 
     def add_review(self, review):
         """Add a review to the place."""

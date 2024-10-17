@@ -1,15 +1,14 @@
 from app.models.base import BaseModel
 import re
+import uuid
 
 class User(BaseModel):
-    def __init__(self, first_name, last_name, email, is_admin=False):
-        super().__init__()
+    def __init__(self, first_name, last_name, email, is_admin=False, id=None):
+        super().__init__()  # BaseModel will generate and set the id
         self._first_name = first_name
         self._last_name = last_name
         self._email = email
         self._is_admin = is_admin
-        self.reviews = []
-        self.places = []
 
     @property
     def first_name(self):
@@ -54,6 +53,10 @@ class User(BaseModel):
             self._is_admin = value
         else:
             raise ValueError("is_admin must be a boolean value")
+
+    @property
+    def id(self):
+        return self._id
 
     def add_review(self, review):
         """Add a review to the user's reviews."""
