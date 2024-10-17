@@ -79,15 +79,15 @@ class UpdateUser(Resource):
         "Updates information of a User by ID"
         #Retrieve the updated data of the user
         user_data = api.payload
-        
+       
         user = facade.get_user(user_id)
         if not user:
-            return {'error': 'No user found'}, 400
-        
+            return {'error': 'No user found'}, 404
+
         updated_user = facade.update_user(user_id, user_data)
         return {
-            'id', updated_user.id,
-            'first_name', updated_user.first_name,
-            'last_name', updated_user.last_name,
-            'email', updated_user.email
+            'id': updated_user.id,
+            'first_name': updated_user.first_name,
+            'last_name': updated_user.last_name,
+            'email': updated_user.email
         }, 200
