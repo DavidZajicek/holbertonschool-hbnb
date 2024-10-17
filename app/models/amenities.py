@@ -12,7 +12,8 @@ class Amenity(BaseModel):
 
     @name.setter
     def name(self, value):
-        if len(value) <= 50:
-            self._name = value 
-        else:
-            raise ValueError("name maximum length of 50 characters")
+
+        if len(value) > 50: # need to make this condition work
+            raise ValueError("Name must be a maximum length of 50 characters")
+        self._name = value
+

@@ -14,7 +14,6 @@ class Place(BaseModel):
         self.reviews = []  # List to store related reviews
         self.amenities = []  # List to store related amenities
 
-
     @property
     def title(self):
         return self._title
