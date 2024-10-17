@@ -20,7 +20,7 @@ facade = HBnBFacade()
 # curl -X GET http://localhost:5000/api/v1/amenities/<amenity_id>
 
 # TESTING - PUT(UPDATE)
-# curl -X PUT http://localhost:5000/api/v1/amenities/d8110fb6-d595-43bf-8f2a-1803f1140cae -H "Content-Type: application/json" -d '{"name": "Wifi"}'
+# curl -X PUT http://localhost:5000/api/v1/amenities/<amenity_id> -H "Content-Type: application/json" -d '{"name": "Wifi"}'
 @api.route('/')
 class AmenityList(Resource):
     @api.expect(amenity_model)
@@ -38,7 +38,6 @@ class AmenityList(Resource):
     @api.response(200, 'List of amenities retrieved successfully')
     def get(self):
         amenities = facade.get_all_amenities()
-
         return [{'id': amenity.id, 'name': amenity.name } for amenity in amenities ], 200
 
 @api.route('/<amenity_id>')
