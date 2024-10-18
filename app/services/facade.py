@@ -16,11 +16,17 @@ class HBnBFacade:
         """Creates a new user and saves it to the repository"""
         user = User(**user_data)
         self.user_repo.add(user)
+        print(f"User created: {user.id}")
+        print(f"All users after creation: {self.user_repo.get_all()}")
         return user
 
     def get_user(self, user_id):
         """Fetch an User by their ID"""
-        return self.user_repo.get(user_id)
+        user = self.user_repo.get(user_id)
+        print(f"Attempting to get user with id: {user_id}")
+        print(f"User retrieved: {user}")
+        print(f"All users in repository: {self.user_repo.get_all()}")
+        return user
 
     def get_user_by_email(self, email):
         """Fetch a user by their email address"""
@@ -75,18 +81,22 @@ class HBnBFacade:
 
     # PLACE
     def create_place(self, place_data):
-        owner_id = place_data.get('id')  # Changed from 'owner_id' to 'id'
+        owner_id = place_data.get('owner_id')
         if not owner_id:
-            raise ValueError("id is required")  # Changed error message
+            raise ValueError("owner_id is required")
         
+        print(f"Attempting to retrieve owner with id: {owner_id}")
         owner = self.get_user(owner_id)
+        print(f"Retrieved owner: {owner}")
+        
         if not owner:
+            all_users = self.user_repo.get_all()
+            print(f"All users in repository: {all_users}")
             raise ValueError(f"Owner with id {owner_id} not found")
         
-        # Remove id from place_data as we're passing it directly
-        place_data.pop('id', None)
+        place_data.pop('owner_id', None)
         
-        place = Place(id=owner_id, **place_data)  # Changed owner to id
+        place = Place(owner=owner, **place_data)
         self.place_repo.add(place)
         return place
 
@@ -105,13 +115,15 @@ class HBnBFacade:
 
     # REVIEW
     def create_review(self, review_data):
-        user = self.get_user(review_data['user_id'])
-        place = self.get_place(review_data['place_id'])
+        user = self.user_repo.get(review_data['user_id'])
+        place = self.place_repo.get(review_data['place_id'])
         if not user or not place:
-            raise ValueError("User or Place not found")
-        review = Review(user=user, place=place, **review_data)
+            raise ValueError("Invalid user_id or place_id")
+        if not 1 <= review_data['rating'] <= 5:
+            raise ValueError("Rating must be between 1 and 5")
+        review = Review(review_data['text'], review_data['rating'], place, user)
         self.review_repo.add(review)
-        place.add_review(review)
+        print(f"Review created: {review}, place: {review.place}, user: {review.user}")
         return review
 
     def get_review(self, review_id):
@@ -120,16 +132,41 @@ class HBnBFacade:
     def get_all_reviews(self):
         return self.review_repo.get_all()
 
+    def get_reviews_by_place(self, place_id):
+        place = self.place_repo.get(place_id)
+        if not place:
+            raise ValueError("Place not found")
+        return [review for review in self.review_repo.get_all() if review.place.id == place_id]
+
     def update_review(self, review_id, review_data):
-        review = self.get_review(review_id)
+        review = self.review_repo.get(review_id)
         if not review:
             raise ValueError("Review not found")
-        self.review_repo.update(review_id, review_data)
-        return self.get_review(review_id)
+        if 'rating' in review_data and not 1 <= review_data['rating'] <= 5:
+            raise ValueError("Rating must be between 1 and 5")
+        review.update(review_data)
+        return review
 
     def delete_review(self, review_id):
-        review = self.get_review(review_id)
+        review = self.review_repo.get(review_id)
         if not review:
             raise ValueError("Review not found")
         self.review_repo.delete(review_id)
-        review.place.reviews.remove(review)
+
+    def get_place_reviews(self, place_id):
+        """Get all reviews for a specific place"""
+        place = self.get_place(place_id)
+        if not place:
+            raise ValueError("Place not found")
+    
+        all_reviews = self.review_repo.get_all()
+        place_reviews = []
+    
+        for review in all_reviews:
+            if hasattr(review, 'place') and hasattr(review.place, 'id'):
+                if review.place.id == place_id:
+                    place_reviews.append(review)
+            else:
+                print(f"Warning: Invalid review object found: {review}")
+    
+        return place_reviews

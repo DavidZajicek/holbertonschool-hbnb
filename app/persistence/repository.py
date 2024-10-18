@@ -28,17 +28,21 @@ class Repository(ABC):
 
 
 class InMemoryRepository(Repository):
+    _storage = {}  # Class variable to store data
+
     def __init__(self):
-        self._storage = {}
+        self.repo_name = self.__class__.__name__
+        if self.repo_name not in InMemoryRepository._storage:
+            InMemoryRepository._storage[self.repo_name] = {}
 
     def add(self, obj):
-        self._storage[obj.id] = obj
+        InMemoryRepository._storage[self.repo_name][obj.id] = obj
 
     def get(self, obj_id):
-        return self._storage.get(obj_id)
+        return InMemoryRepository._storage[self.repo_name].get(obj_id)
 
     def get_all(self):
-        return list(self._storage.values())
+        return list(InMemoryRepository._storage[self.repo_name].values())
 
     def update(self, obj_id, data):
         obj = self.get(obj_id)
@@ -46,8 +50,8 @@ class InMemoryRepository(Repository):
             obj.update(data)
 
     def delete(self, obj_id):
-        if obj_id in self._storage:
-            del self._storage[obj_id]
+        if obj_id in InMemoryRepository._storage[self.repo_name]:
+            del InMemoryRepository._storage[self.repo_name][obj_id]
 
     def get_by_attribute(self, attr_name, attr_value):
-        return next((obj for obj in self._storage.values() if getattr(obj, attr_name) == attr_value), None)
+        return next((obj for obj in self.get_all() if getattr(obj, attr_name) == attr_value), None)
