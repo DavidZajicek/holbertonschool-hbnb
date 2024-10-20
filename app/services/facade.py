@@ -3,13 +3,16 @@ from app.models.places import Place
 from app.models.user import User
 from app.models.amenities import Amenity
 
+
 class HBnBFacade:
     def __init__(self):
         self.user_repo = InMemoryRepository()
         self.place_repo = InMemoryRepository()
         self.review_repo = InMemoryRepository()
         self.amenity_repo = InMemoryRepository()
+        self.amenities = []
 # USER
+
     def create_user(self, user_data):
         """Creates a new user and saves it to the repository"""
         user = User(**user_data)
@@ -17,10 +20,26 @@ class HBnBFacade:
         return user
 
     def get_user(self, user_id):
+        """Fetch an User by their ID"""
         return self.user_repo.get(user_id)
 
     def get_user_by_email(self, email):
+        """Fetch a user by their email address"""
         return self.user_repo.get_by_attribute('email', email)
+
+    def get_all_users(self):
+        """Fetch all users"""
+        return self.user_repo.get_all()
+
+    def update_user(self, user_id, user_data):
+        """Update an existing user"""
+        user = self.user_repo.get(user_id)
+        if not user:
+            return None
+
+        self.user_repo.update(user_id, user_data)
+        updated_user = self.user_repo.get(user_id)
+        return updated_user
 
     # Places Facade
     def create_place(self, place_data):
@@ -56,30 +75,10 @@ class HBnBFacade:
             return None
         place = self.place_repo.get(place_id)
         return place.toJSON()
-        """Fetch an User by their ID"""
-        return self.user_repo.get(user_id)
 
-    def get_user_by_email(self, email):
-        """Fetch a user by their email address"""
-        return self.user_repo.get_by_attribute('email', email)
-
-    def get_all_users(self):
-        """Fetch all users"""
-        return self.user_repo.get_all()
-
-    def update_user(self, user_id, user_data):
-        """Update an existing user"""
-        user = self.user_repo.get(user_id)
-        if not user:
-            return None
-
-        self.user_repo.update(user_id, user_data)
-        updated_user = self.user_repo.get(user_id)
-        return updated_user
 
 # AMENITY
-    def __init__(self):
-        self.amenities = []
+
 
     def create_amenity(self, amenity_data):
         name = amenity_data.get('name')
