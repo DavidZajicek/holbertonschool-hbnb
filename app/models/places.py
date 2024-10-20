@@ -1,6 +1,7 @@
 #!/usr/bin/python3
-from .base import BaseModel
-from app.models.users import User
+from app.models.base import BaseModel
+from app.models.user import User
+
 
 class Place(BaseModel):
     def __init__(self, title, description, price, latitude, longitude, owner):
@@ -10,7 +11,7 @@ class Place(BaseModel):
         self._price = price
         self._latitude = latitude
         self._longitude = longitude
-        self._owner = owner # User id
+        self._owner = owner  # User id
         self.reviews = []  # List to store related reviews
         self.amenities = []  # List to store related amenities
 
@@ -20,10 +21,13 @@ class Place(BaseModel):
 
     @title.setter
     def title(self, value):
-        if len(value) <= 100:
-            self._title = value
-        else:
-            ValueError("Title maximum length of 100 characters")
+        try:
+            if len(value) <= 100:
+                self._title = value
+            else:
+                raise ValueError("Title maximum length of 100 characters")
+        except TypeError:
+            raise TypeError("Title must be a string")
 
     @property
     def description(self):
@@ -56,7 +60,8 @@ class Place(BaseModel):
         if isinstance(value, float) and -90.0 <= value <= 90.0:
             self._latitude = value
         else:
-            raise ValueError("Latitude must be within the range of -90.0 to 90.0")
+            raise ValueError(
+                "Latitude must be within the range of -90.0 to 90.0")
 
     @property
     def longitude(self):
@@ -67,7 +72,8 @@ class Place(BaseModel):
         if isinstance(value, float) and -180.0 <= value <= 180.0:
             self._longitude = value
         else:
-            raise ValueError("Longitude must be within the range of -180.0 to 180.0")
+            raise ValueError(
+                "Longitude must be within the range of -180.0 to 180.0")
 
     @property
     def owner(self):
@@ -78,7 +84,7 @@ class Place(BaseModel):
         if isinstance(value, User):
             self._owner = value
         else:
-            raise ValueError("User must be an instance of User.")
+            raise ValueError("User must be a valid instance of User.")
 
     def add_review(self, review):
         """Add a review to the place."""
@@ -87,3 +93,23 @@ class Place(BaseModel):
     def add_amenity(self, amenity):
         """Add an amenity to the place."""
         self.amenities.append(amenity)
+
+    def toJSON(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "description": self.description,
+            "price": self.price,
+            "latitude": self.latitude,
+            "longitude": self.longitude,
+            "owner": {
+                "id": "place_holder",
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@example.com",
+            },
+            "amenities": self.amenities,
+            "reviews": self.reviews,
+            "created_at": str(self.created_at),
+            "updated_at": str(self.updated_at),
+        }
