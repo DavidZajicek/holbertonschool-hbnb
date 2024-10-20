@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-from .base import BaseModel
+from app.models.base import BaseModel
 
 class User(BaseModel):
     def __init__(self, first_name, last_name, email, is_admin=False):
@@ -17,7 +17,7 @@ class User(BaseModel):
 
     @first_name.setter
     def first_name(self, value):
-        if len(value) <= 50:
+        if value and len(value) <= 50:
             self._first_name = value
         else:
             raise ValueError("first_name maximum length of 50 characters")
@@ -28,7 +28,7 @@ class User(BaseModel):
 
     @last_name.setter
     def last_name(self, value):
-        if len(value) <= 50:
+        if value and len(value) <= 50:
             self._last_name = value
         else:
             raise ValueError("last_name maximum length of 50 characters")
@@ -40,7 +40,7 @@ class User(BaseModel):
     @email.setter
     def email(self, value):
         # regex = [^@]+@[^@]+\.[^@]+
-        if '@' in value:
+        if value and re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', value):
             self._email = value
         else:
             raise ValueError("Email must be unique, and should follow standard email format")

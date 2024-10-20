@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 from app.models.base import BaseModel
-from app.models.users import User
+from app.models.user import User
 
 
 class Place(BaseModel):
