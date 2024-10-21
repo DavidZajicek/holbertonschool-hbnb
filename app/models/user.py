@@ -1,12 +1,15 @@
 #!/usr/bin/python3
+import re
 from app.models.base import BaseModel
+
 
 class User(BaseModel):
     def __init__(self, first_name, last_name, email, is_admin=False):
         super().__init__()
-        self._first_name = first_name # maximum length of 50 characters.
-        self._last_name = last_name # maximum length of 50 characters.
-        self._email = email # Required, must be unique, and should follow standard @email format validation.
+        self._first_name = first_name  # maximum length of 50 characters.
+        self._last_name = last_name  # maximum length of 50 characters.
+        # Required, must be unique, and should follow standard @email format validation.
+        self._email = email
         self._is_admin = is_admin  # Defaults to False
         self.reviews = []
         self.places = []
@@ -43,7 +46,8 @@ class User(BaseModel):
         if value and re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', value):
             self._email = value
         else:
-            raise ValueError("Email must be unique, and should follow standard email format")
+            raise ValueError(
+                "Email must be unique, and should follow standard email format")
 
     @property
     def is_admin(self):
