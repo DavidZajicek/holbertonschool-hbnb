@@ -10,7 +10,6 @@ class HBnBFacade:
         self.place_repo = InMemoryRepository()
         self.review_repo = InMemoryRepository()
         self.amenity_repo = InMemoryRepository()
-        self.amenities = []
 
 # USER
 
@@ -42,7 +41,7 @@ class HBnBFacade:
         updated_user = self.user_repo.get(user_id)
         return updated_user
 
-    # Places Facade
+# Places Facade
     def create_place(self, place_data):
         try:
             place = Place(
@@ -77,7 +76,6 @@ class HBnBFacade:
         place = self.place_repo.get(place_id)
         return place.toJSON()
 
-
 # AMENITY
 
     def create_amenity(self, amenity_data):
@@ -85,28 +83,29 @@ class HBnBFacade:
         if not name:
             raise ValueError("Amenity name is required")
 
-        existing_amenity = self.get_amenity_by_name(name)
+        existing_amenity = self.amenity_repo.get_by_attribute('name', name)
         if existing_amenity:
             raise ValueError("Amenity name already exists")
 
         new_amenity = Amenity(name)
-        self.amenities.append(new_amenity)
+        self.amenity_repo.add(new_amenity)
         return new_amenity
+    # needs to link to Places
 
     def get_amenity(self, amenity_id):
-        for amenity in self.amenities:
-            if amenity.id == amenity_id:
-                return amenity
-        raise ValueError("Amenity ID doesn't exist")
+        amenity = self.amenity_repo.get(amenity_id)
+        if amenity is None:
+            return None  # Return None if no amenity found
+        return amenity
 
     def get_amenity_by_name(self, name):
-        for amenity in self.amenities:
+        for amenity in self.amenity_repo.get_all():
             if amenity.name == name:
                 return amenity
         return None
 
     def get_all_amenities(self):
-        return self.amenities
+        return self.amenity_repo.get_all()
 
     def update_amenity(self, amenity_id, amenity_data):
         amenity = self.get_amenity(amenity_id)
