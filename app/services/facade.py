@@ -55,10 +55,9 @@ class HBnBFacade:
                 price=place_data['price'],
                 latitude=place_data['latitude'],
                 longitude=place_data['longitude'],
-                owner=User('place_holder', 'place_holder', 'placeholder'))
-            # owner=self.get_user(place_data['owner_id']))
+                owner=self.get_user(place_data['owner_id']))
             self.place_repo.add(place)
-            return place.toJSON()
+            return place
         except KeyError:
             return None
 
@@ -83,7 +82,6 @@ class HBnBFacade:
 
 
 # AMENITY
-
 
     def create_amenity(self, amenity_data):
         name = amenity_data.get('name')
