@@ -11,6 +11,11 @@ class HBnBFacade:
         self.review_repo = InMemoryRepository()
         self.amenity_repo = InMemoryRepository()
 
+    def __new__(cls):
+        if not hasattr(cls, 'instance'):
+            cls.instance = super(HBnBFacade, cls).__new__(cls)
+        return cls.instance
+
 # USER
 
     def create_user(self, user_data):
@@ -50,10 +55,9 @@ class HBnBFacade:
                 price=place_data['price'],
                 latitude=place_data['latitude'],
                 longitude=place_data['longitude'],
-                owner=User('place_holder', 'place_holder', 'placeholder'))
-            # owner=self.get_user(place_data['owner_id']))
+                owner=self.get_user(place_data['owner_id']))
             self.place_repo.add(place)
-            return place.toJSON()
+            return place
         except KeyError:
             return None
 

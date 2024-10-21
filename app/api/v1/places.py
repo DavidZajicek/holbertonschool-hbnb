@@ -24,7 +24,6 @@ place_model = api.model('Place', {
     'latitude': fields.Float(required=True, description='Latitude of the place'),
     'longitude': fields.Float(required=True, description='Longitude of the place'),
     'owner_id': fields.String(required=True, description='ID of the owner'),
-    'owner': fields.Nested(user_model, description='Owner details'),
     'amenities': fields.List(fields.String, required=True, description="List of amenities ID's")
 })
 
@@ -39,10 +38,12 @@ class PlaceList(Resource):
     def post(self):
         """Register a new place"""
         place_data = api.payload
-        new_place = facade.create_place(place_data)
-        if new_place:
-            return new_place, 201
-        return {'error': 'Invalid input data'}, 400
+        try:
+            new_place = facade.create_place(place_data)
+            if new_place:
+                return new_place.toJSON(), 201
+        except (ValueError, TypeError) as exc:
+            return {'error': 'Invalid input data', 'exception': str(exc)}, 400
 
     @api.response(200, 'List of places retrieved successfully')
     def get(self):
@@ -58,7 +59,7 @@ class PlaceResource(Resource):
         """Get place details by ID"""
         place = facade.get_place(place_id)
         if place:
-            return place
+            return place.toJSON()
         return {'error': 'Place not found'}, 404
 
     @api.expect(place_model)
