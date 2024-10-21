@@ -1,7 +1,7 @@
 import unittest
 from app import create_app
 
-class TestUserEndpoints(unittest.TestCase):
+class TestAmenityEndpoints(unittest.TestCase):
 
     def setUp(self):
         self.app = create_app()
@@ -44,3 +44,6 @@ class TestUserEndpoints(unittest.TestCase):
         })
         self.assertEqual(response.status_code, 200)
         self.assertIn('Amenity updated successfully', response.get_json()['message'])
+
+if __name__ == '__main__':
+    unittest.main()

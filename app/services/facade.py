@@ -7,6 +7,7 @@ class HBnBFacade:
         self.place_repo = InMemoryRepository()
         self.review_repo = InMemoryRepository()
         self.amenity_repo = InMemoryRepository()
+        # self.amenities = []
 # USER
     def create_user(self, user_data):
         user = User(**user_data)
@@ -20,9 +21,6 @@ class HBnBFacade:
         return self.user_repo.get_by_attribute('email', email)
 
 # AMENITY
-    def __init__(self):
-        self.amenities = []
-
     def create_amenity(self, amenity_data):
         name = amenity_data.get('name')
         if not name:
