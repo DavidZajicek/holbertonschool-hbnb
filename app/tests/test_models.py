@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-from app.models.users import User
+from app.models.user import User
 from app.models.places import Place
 from app.models.reviews import Review
 from app.models.amenities import Amenity
