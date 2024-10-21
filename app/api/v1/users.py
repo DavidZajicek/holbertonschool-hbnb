@@ -11,9 +11,8 @@ user_model = api.model('User', {
 })
 
 facade = HBnBFacade()
-#from app.services import HBnBFacade
-
-
+# curl -X POST http://localhost:5000/api/v1/users/ -H "Content-Type: application/json" -d \
+#'{"first_name": "Amy", "last_name": "Smith", "email": "amy@example.com"}'
 @api.route('/')
 class UserList(Resource):
     @api.expect(user_model, validate=True)
@@ -30,8 +29,33 @@ class UserList(Resource):
             return {'error': 'Email already registered'}, 400
 
         new_user = facade.create_user(user_data)
-        return {'id': new_user.id, 'first_name': new_user.first_name, 'last_name': new_user.last_name, 'email': new_user.email}, 201
+        return {
+            'id': new_user.id,
+            'first_name': new_user.first_name,
+            'last_name': new_user.last_name, 
+            'email': new_user.email
+            }, 201
 
+    # curl -X GET http://localhost:5000/api/v1/users/
+    @api.response(200, 'List of users retrieved successfully')
+    @api.response(404, 'No users found')
+    def get(self):
+        """Retrieves a list of all users"""
+        users = facade.get_all_users()
+        if not users:
+            return {'error': 'No users found'}, 400
+
+        users_list = [{
+            'id': user.id, 
+            'first_name': user.first_name, 
+            'last_name': user.last_name, 
+            'email': user.email
+            } for user in users]
+
+        return users_list, 200
+
+#User retrieval by ID
+#curl -X GET http://localhost:5000/api/v1/users/<user_id>
 @api.route('/<user_id>')
 class UserResource(Resource):
     @api.response(200, 'User details retrieved successfully')
@@ -41,4 +65,31 @@ class UserResource(Resource):
         user = facade.get_user(user_id)
         if not user:
             return {'error': 'User not found'}, 404
-        return {'id': user.id, 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email}, 200
+        return {
+            'id': user.id, 
+            'first_name': user.first_name, 
+            'last_name': user.last_name, 
+            'email': user.email
+            }, 200
+    #Updating user information
+    # curl -X PUT http://localhost:5000/api/v1/users/{user_id} -H "Content-Type: application/json" \
+    # -d '{"first_name": "Jane", "last_name": "Doe", "email": "jane.doe@example.com"}'
+
+    @api.response(200, 'User updated successfully')
+    @api.response(404, 'Update cannot be processed')
+    def put(self, user_id):
+        "Updates information of a User by ID"
+        #Retrieve the updated data of the user
+        user_data = api.payload
+
+        user = facade.get_user(user_id)
+        if not user:
+            return {'error': 'No user found'}, 404
+
+        updated_user = facade.update_user(user_id, user_data)
+        return {
+            'id': updated_user.id,
+            'first_name': updated_user.first_name,
+            'last_name': updated_user.last_name,
+            'email': updated_user.email
+        }, 200

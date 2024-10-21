@@ -1,6 +1,5 @@
 #!/usr/bin/python3
-from .base import BaseModel
-import re
+from app.models.base import BaseModel
 
 class User(BaseModel):
     def __init__(self, first_name, last_name, email, is_admin=False):
