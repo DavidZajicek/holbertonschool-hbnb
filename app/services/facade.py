@@ -11,6 +11,11 @@ class HBnBFacade:
         self.review_repo = InMemoryRepository()
         self.amenity_repo = InMemoryRepository()
         self.amenities = []
+
+    def __new__(cls):
+        if not hasattr(cls, 'instance'):
+            cls.instance = super(HBnBFacade, cls).__new__(cls)
+        return cls.instance
 # USER
 
     def create_user(self, user_data):
