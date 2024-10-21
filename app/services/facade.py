@@ -99,7 +99,7 @@ class HBnBFacade:
     def get_amenity(self, amenity_id):
         amenity = self.amenity_repo.get(amenity_id)
         if amenity is None:
-            return None  # Return None if no amenity found
+            return None
         return amenity
 
     def get_amenity_by_name(self, name):
