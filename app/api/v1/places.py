@@ -76,4 +76,4 @@ class PlaceResource(Resource):
 
         if not new_place:
             return {'error': 'Invalid input data'}, 400
-        return new_place
+        return new_place.toJSON()

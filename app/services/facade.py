@@ -64,7 +64,7 @@ class HBnBFacade:
     def get_place(self, place_id):
         place: Place = self.place_repo.get(place_id)
         if place:
-            return place.toJSON()
+            return place
 
     def get_all_places(self):
         places = []
@@ -78,7 +78,7 @@ class HBnBFacade:
         except (KeyError, ValueError):
             return None
         place = self.place_repo.get(place_id)
-        return place.toJSON()
+        return place
 
 # AMENITY
 
