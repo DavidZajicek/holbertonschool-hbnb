@@ -37,8 +37,12 @@ To install the requirements to run this project run the following command
 `pip install -r requirements.txt`
 
 ### Run
-To run and test the project, run the following command while in the root directory
+To run the project, run the following command while in the root directory
 `python run.py`
+
+### Test
+To test the project, run the following command while in the root directory
+`python3 -m unittest discover app.tests`
 
 -------------------------------------------------------------------------------------------------------------------------
 ### 🧑‍💻 Developed By:
