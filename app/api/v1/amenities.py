@@ -65,6 +65,3 @@ class AmenityResource(Resource):
 
         updated_amenity = facade.update_amenity(amenity_id, amenity_data)
         return {'id': updated_amenity.id, 'name': updated_amenity.name}, 200
-
-# /places/amenities
-# /places/amenities/id
