@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 from app.models.base import BaseModel
 from app.models.places import Place
-from app.models.users import User
+from app.models.user import User
 
 
 class Review(BaseModel):

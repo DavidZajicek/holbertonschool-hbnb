@@ -6,12 +6,12 @@ from app.models.user import User
 class Place(BaseModel):
     def __init__(self, title, description, price, latitude, longitude, owner):
         super().__init__()
-        self._title = title
-        self._description = description
-        self._price = price
-        self._latitude = latitude
-        self._longitude = longitude
-        self._owner = owner  # User id
+        self.title = title
+        self.description = description
+        self.price = price
+        self.latitude = latitude
+        self.longitude = longitude
+        self.owner = owner  # User id
         self.reviews = []  # List to store related reviews
         self.amenities = []  # List to store related amenities
 
@@ -46,7 +46,7 @@ class Place(BaseModel):
 
     @price.setter
     def price(self, value):
-        if isinstance(value, float) and value > 0:
+        if isinstance(value, (float, int)) and value > 0:
             self._price = value
         else:
             raise ValueError("Price must be a positive value")
@@ -57,7 +57,7 @@ class Place(BaseModel):
 
     @latitude.setter
     def latitude(self, value):
-        if isinstance(value, float) and -90.0 <= value <= 90.0:
+        if isinstance(value, (float, int)) and -90.0 <= value <= 90.0:
             self._latitude = value
         else:
             raise ValueError(
@@ -69,7 +69,7 @@ class Place(BaseModel):
 
     @longitude.setter
     def longitude(self, value):
-        if isinstance(value, float) and -180.0 <= value <= 180.0:
+        if isinstance(value, (float, int)) and -180.0 <= value <= 180.0:
             self._longitude = value
         else:
             raise ValueError(
@@ -81,10 +81,14 @@ class Place(BaseModel):
 
     @owner.setter
     def owner(self, value):
-        if isinstance(value, User):
-            self._owner = value
-        else:
-            raise ValueError("User must be a valid instance of User.")
+        try:
+            if isinstance(value, User):
+                self._owner = value
+            else:
+                raise ValueError
+        except ValueError:
+            raise ValueError(
+                f"User must be a valid instance of User. {str(value)}")
 
     def add_review(self, review):
         """Add a review to the place."""
@@ -103,10 +107,10 @@ class Place(BaseModel):
             "latitude": self.latitude,
             "longitude": self.longitude,
             "owner": {
-                "id": "place_holder",
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@example.com",
+                "id": self.owner.id,
+                "first_name": self.owner.first_name,
+                "last_name": self.owner.last_name,
+                "email": self.owner.email,
             },
             "amenities": self.amenities,
             "reviews": self.reviews,
