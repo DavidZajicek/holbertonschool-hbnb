@@ -94,7 +94,6 @@ class HBnBFacade:
         new_amenity = Amenity(name)
         self.amenity_repo.add(new_amenity)
         return new_amenity
-    # needs to link to Places
 
     def get_amenity(self, amenity_id):
         amenity = self.amenity_repo.get(amenity_id)
