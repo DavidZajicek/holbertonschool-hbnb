@@ -17,8 +17,8 @@ facade = HBnBFacade()
 class UserList(Resource):
     @api.expect(user_model, validate=True)
     @api.response(201, 'User successfully created')
-    @api.response(400, 'Email already registered')
-    @api.response(400, 'Invalid input data')
+    @api.response(400, 'Email already registered or Invalid input data')
+  #  @api.response(400, 'Invalid input data')
     def post(self):
         """Register a new user"""
         user_data = api.payload
@@ -43,7 +43,7 @@ class UserList(Resource):
         """Retrieves a list of all users"""
         users = facade.get_all_users()
         if not users:
-            return {'error': 'No users found'}, 400
+            return {'error': 'No users found'}, 404
 
         users_list = [{
             'id': user.id, 
@@ -93,3 +93,13 @@ class UserResource(Resource):
             'last_name': updated_user.last_name,
             'email': updated_user.email
         }, 200
+
+    @api.response(204, "User deleted successfully")
+    @api.response(404, "User not found")
+    def delete(self, user_id):
+        "Delete a user by ID"
+        try:
+            facade.delete_user(user_id)
+            return {}, 204
+        except ValueError:
+            return {"Error": "User not found"}, 404
