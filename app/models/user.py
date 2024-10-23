@@ -6,11 +6,11 @@ from app.models.base import BaseModel
 class User(BaseModel):
     def __init__(self, first_name, last_name, email, is_admin=False):
         super().__init__()
-        self._first_name = first_name  # maximum length of 50 characters.
-        self._last_name = last_name  # maximum length of 50 characters.
+        self.first_name = first_name  # maximum length of 50 characters.
+        self.last_name = last_name  # maximum length of 50 characters.
         # Required, must be unique, and should follow standard @email format validation.
-        self._email = email
-        self._is_admin = is_admin  # Defaults to False
+        self.email = email
+        self.is_admin = is_admin  # Defaults to False
         self.reviews = []
         self.places = []
 
