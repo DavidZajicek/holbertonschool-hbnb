@@ -36,10 +36,18 @@ class HBnBFacade:
         user = self.user_repo.get(user_id)
         if not user:
             return None
+        
+        for key, value in user_data.items():
+            setattr(user, key, value)
 
-        self.user_repo.update(user_id, user_data)
-        updated_user = self.user_repo.get(user_id)
-        return updated_user
+        self.user_repo.update(user_id, user)
+        return user
+    
+    def delete_user(self, user_id):
+        """Deletes an user by ID"""
+        if not self.user_repo.get(user_id):
+            return None
+        self.user_repo.delete(user_id)
 
     # Places Facade
     def create_place(self, place_data):
