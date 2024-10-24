@@ -2,6 +2,7 @@ from app.persistence.repository import InMemoryRepository
 from app.models.places import Place
 from app.models.user import User
 from app.models.amenities import Amenity
+from app.models.reviews import Review 
 
 
 class HBnBFacade:
@@ -128,3 +129,62 @@ class HBnBFacade:
             amenity.name = name
         print("Amenity updated successfully")
         return amenity
+
+# REVIEW
+
+    def create_review(self, review_data):
+        """Creates a new review"""
+        try:
+            place = self.get_place(review_data['place_id'])
+            user = self.get_user(review_data['user_id'])
+            if not place or not user:
+                raise ValueError("Place or User not found")
+                
+            review = Review(
+                text=review_data['text'],
+                rating=review_data['rating'],
+                place=place,
+                user=user
+            )
+            self.review_repo.add(review)
+            return review
+        except KeyError:
+            raise ValueError("Missing required review data")
+
+    def get_review(self, review_id):
+        """Fetch a review by ID"""
+        return self.review_repo.get(review_id)
+
+    def get_reviews_by_place(self, place_id):
+        """Fetch all reviews for a specific place"""
+        place = self.get_place(place_id)
+        if not place:
+            return None
+        return [review for review in self.review_repo.get_all() 
+                if review.place.id == place_id]
+
+    def get_all_reviews(self):
+        """Fetch all reviews"""
+        return self.review_repo.get_all()
+
+    def update_review(self, review_id, review_data):
+        """Update an existing review"""
+        review = self.get_review(review_id)
+        if not review:
+            return None
+        
+        if 'text' in review_data:
+            review.text = review_data['text']
+        if 'rating' in review_data:
+            review.rating = review_data['rating']
+        
+        self.review_repo.update(review_id, review)
+        return review
+
+    def delete_review(self, review_id):
+        """Delete a review"""
+        review = self.get_review(review_id)
+        if not review:
+            return False
+        self.review_repo.delete(review_id)
+        return True
