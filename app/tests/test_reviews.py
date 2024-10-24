@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import unittest
-from datetime import datetime
+from app import create_app
+# from datetime import datetime
 from app.models.user import User
 from app.models.places import Place
 from app.models.reviews import Review
@@ -86,6 +87,134 @@ class TestReviewModel(unittest.TestCase):
         self.assertEqual(json_data['place_id'], self.place.id)
         self.assertTrue('created_at' in json_data)
         self.assertTrue('updated_at' in json_data)
+
+    # Add this new class after the TestReviewModel class
+class TestReviewEndpoints(unittest.TestCase):
+    def setUp(self):
+        self.app = create_app()
+        self.client = self.app.test_client()
+
+    def test_review_api_create(self):
+        """Test review creation through API"""
+        # Create a test user
+        user_response = self.client.post('/api/v1/users/', json={
+            "first_name": "Jane",
+            "last_name": "Doe",
+            "email": "jane.doe@example.com"
+        })
+        user_id = user_response.get_json()['id']
+        
+        # Create a test place
+        place_response = self.client.post('/api/v1/places/', json={
+            "title": "Test Place",
+            "description": "Test Description",
+            "price": 100,
+            "latitude": 40.7128,
+            "longitude": -74.0060,
+            "owner_id": user_id,
+            "amenities": []
+        })
+        place_id = place_response.get_json()['id']
+
+        # Create a review
+        response = self.client.post('/api/v1/reviews/', json={
+            "text": "Great place!",
+            "rating": 5,
+            "user_id": user_id,
+            "place_id": place_id
+        })
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual("Great place!", response.get_json()['text'])
+        self.assertEqual(5, response.get_json()['rating'])
+
+    def test_review_api_crud_operations(self):
+        """Test CRUD operations for reviews through API"""
+        # Create test user and place first
+        user_response = self.client.post('/api/v1/users/', json={
+            "first_name": "Jane",
+            "last_name": "Doe",
+            "email": "jane3.doe@example.com"
+        })
+        user_id = user_response.get_json()['id']
+        
+        place_response = self.client.post('/api/v1/places/', json={
+            "title": "Test Place",
+            "description": "Test Description",
+            "price": 100,
+            "latitude": 40.7128,
+            "longitude": -74.0060,
+            "owner_id": user_id,
+            "amenities": []
+        })
+        place_id = place_response.get_json()['id']
+
+        # CREATE
+        create_response = self.client.post('/api/v1/reviews/', json={
+            "text": "Great place!",
+            "rating": 5,
+            "user_id": user_id,
+            "place_id": place_id
+        })
+        self.assertEqual(create_response.status_code, 201)
+        review_id = create_response.get_json()['id']
+
+        # READ
+        get_response = self.client.get(f'/api/v1/reviews/{review_id}')
+        self.assertEqual(get_response.status_code, 200)
+        self.assertEqual("Great place!", get_response.get_json()['text'])
+
+        # UPDATE
+        update_response = self.client.put(f'/api/v1/reviews/{review_id}', json={
+            "text": "Updated review",
+            "rating": 4
+        })
+        self.assertEqual(update_response.status_code, 200)
+        self.assertEqual("Updated review", update_response.get_json()['text'])
+        self.assertEqual(4, update_response.get_json()['rating'])
+
+        # DELETE
+        delete_response = self.client.delete(f'/api/v1/reviews/{review_id}')
+        self.assertEqual(delete_response.status_code, 200)
+
+        # Verify DELETE
+        get_after_delete = self.client.get(f'/api/v1/reviews/{review_id}')
+        self.assertEqual(get_after_delete.status_code, 404)
+
+    def test_get_place_reviews(self):
+        """Test getting reviews for a specific place"""
+        # Create test user and place first
+        user_response = self.client.post('/api/v1/users/', json={
+            "first_name": "Jane",
+            "last_name": "Doe",
+            "email": "jane4.doe@example.com"
+        })
+        user_id = user_response.get_json()['id']
+        
+        place_response = self.client.post('/api/v1/places/', json={
+            "title": "Test Place",
+            "description": "Test Description",
+            "price": 100,
+            "latitude": 40.7128,
+            "longitude": -74.0060,
+            "owner_id": user_id,
+            "amenities": []
+        })
+        place_id = place_response.get_json()['id']
+
+        # Create a review
+        self.client.post('/api/v1/reviews/', json={
+            "text": "Great place!",
+            "rating": 5,
+            "user_id": user_id,
+            "place_id": place_id
+        })
+
+        # Get reviews for the place
+        response = self.client.get(f'/api/v1/places/{place_id}/reviews')
+        self.assertEqual(response.status_code, 200)
+        reviews = response.get_json()
+        self.assertTrue(isinstance(reviews, list))
+        self.assertGreater(len(reviews), 0)
 
 if __name__ == '__main__':
     unittest.main()
