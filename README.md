@@ -19,19 +19,16 @@ Presentation Layer: Handles user interactions through services and API endpoints
 This directory contains the core Flask application and instance, which is created and served within the __init__.py script
 
 ### 🗃 Persistence
-This directory contains the current in-memeory persistence layer that will be replaced with a database layer in the future
+This directory contains the current in-memeory persistence layer that will be replaced with a database layer in the future. The `repository.py` file acts as the interface or class responsible for managing data within the in-memory persistence layer. This file simulates the behavior of a database by providing methods for storing, retrieving, updating, and deleting data in the application’s internal storage (likely using Python data structures like dictionaries or lists)
 
 ### 💡 Services
-This directory contains our services that run HBnB
-
-#### 🪸 HBnBFacade
-This class handles communication between the Presentation, Business Logic, and Persistence Layers.
+This directory contains our services that run HBnB. The `facade.py` implements the Facade design pattern. The Facade pattern provides a simplified interface to a complex subsystem, making it easier to interact with different parts of the system (Presentation, Business Logic, and Persistence Layers).
 
 ### 💡 run.py
-This is the root file that will serve as the entry point for our AirBNB Clone
+This is the root file that will serve as the entry point for our AirBNB Clone. It contains the code that initializes and launches the main components, such as setting up the application server, and starting services.
 
 ### ⚙️ config.py
-This file contains environment-specific setting definitions
+This file contains environment-specific setting definitions.
 
 ### 🔑 requirements.txt
 To install the requirements to run this project run the following command
