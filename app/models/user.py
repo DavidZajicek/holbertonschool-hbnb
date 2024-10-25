@@ -3,6 +3,10 @@ from app.models.base import BaseModel
 import re
 
 class User(BaseModel):
+    # Class variable to store existing emails
+    existing_emails = set()
+
+
     def __init__(self, first_name, last_name, email, is_admin=False):
         super().__init__()
         self.first_name = first_name  # maximum length of 50 characters.
@@ -47,7 +51,10 @@ class User(BaseModel):
     def email(self, value):
         if isinstance(value, str) and re.match(
             r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', value):
+                if value in User.existing_emails:
+                    raise ValueError("Email already registered")
                 self._email = value
+                User.existing_emails.add(value)
         else:
             raise ValueError(
                 "Email must follow standard format")
@@ -79,7 +86,7 @@ class User(BaseModel):
             "email": self.email,
             "is_admin": self.is_admin,
             "places": [place.toJSON() for place in self.places],
-            "reviews": self.reviews,
+            "reviews": [review.toJSON() for reviws in self.reviews],
             "created_at": str(self.created_at),
             "updated_at": str(self.updated_at),
         }

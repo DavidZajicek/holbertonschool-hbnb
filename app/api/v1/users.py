@@ -24,7 +24,7 @@ class UserList(Resource):
         # Simulate email uniqueness check (to be replaced by real validation with persistence)
         existing_user = facade.get_user_by_email(user_data['email'])
         if existing_user:
-            return {'error': 'Invalid input data'}, 400
+            return {'error': 'Email already registered'}, 400
 
         try:
             new_user = facade.create_user(user_data)
@@ -74,7 +74,7 @@ class UserResource(Resource):
             updated_user = facade.update_user(user_id, user_data)
         except ValueError as e:
             return {'error': str(e)}, 400
-    
+
         if updated_user:
             return updated_user.toJSON(), 200
 
@@ -87,5 +87,5 @@ class UserResource(Resource):
         try:
             facade.delete_user(user_id)
             return {}, 204
-        except ValueError:
-            return {"Error": "User not found"}, 404
+        except ValueError as e:
+            return {"Error": str(e)}, 404
