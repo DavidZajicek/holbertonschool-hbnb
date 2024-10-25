@@ -41,7 +41,7 @@ class HBnBFacade:
         """Update an existing user"""
         user = self.user_repo.get(user_id)
         if not user:
-            return None
+            raise ValueError("Invalid input data")
         
         for key, value in user_data.items():
             setattr(user, key, value)
