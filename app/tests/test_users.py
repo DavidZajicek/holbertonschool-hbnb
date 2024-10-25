@@ -41,35 +41,38 @@ class TestUserEndpoints(unittest.TestCase):
     #     self.assertEqual(response.status_code, 400)
     #     self.assertIn('Email already registered', response.get_json()['error'])
 
-    # def test_create_user_invalid_data(self):
-    #     response = self.client.post('/api/v1/users/', json={
-    #         "first_name": "Amy",
-    #         "last_name": "Smith",
-    #         "email": "invalid-email"
-    #         })
-    #     self.assertEqual(response.status_code, 400)
-    #     self.assertIn('Invalid input data', response.get_json()['error'])
+    def test_create_user_invalid_data(self):
+        response = self.client.post('/api/v1/users/', json={
+            "first_name": "Amy",
+            "last_name": "Smith",
+            "email": "amyemail.com"
+            })
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('Email must follow standard format', response.get_json()['error'])
 
-    # def test_update_user(self):
-    #     #Create the user first
-    #     user_response = self.client.post('/api/v1/users/', json={
-    #         "first_name": "Amy",
-    #         "last_name": "Smith",
-    #         "email": "amy@example.com"
-    #     })
+    def test_update_user(self):
+        #Create the user first
+        user_response = self.client.post('/api/v1/users/', json={
+            "first_name": "Amy",
+            "last_name": "Smith",
+            "email": "amy@example.com"
+        })
 
-    #     user_id = user_response.get_json()['id']
+        self.assertEqual(user_response.status_code, 201)
+        self.assertIn('id', user_response.get_json())
 
-    #     response = self.client.put(f'/api/v1/users/{user_id}', json= {
-    #         "first_name": "Amy",
-    #         "last_name": "Doe",
-    #         "email": "amy.doe@example.com"
-    #     })
+        user_id = user_response.get_json()['id']
 
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(response.get_json()['first_name'], "Amy")
-    #     self.assertEqual(response.get_json()['last_name'], "Doe")
-    #     self.assertEqual(response.get_json()['email'], "amy.doe@example.com")
+        response = self.client.put(f'/api/v1/users/{user_id}', json= {
+            "first_name": "Amy",
+            "last_name": "Doe",
+            "email": "amy.doe@example.com"
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json()['first_name'], "Amy")
+        self.assertEqual(response.get_json()['last_name'], "Doe")
+        self.assertEqual(response.get_json()['email'], "amy.doe@example.com")
 
 if __name__ == '__main__':
     unittest.main()
