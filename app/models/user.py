@@ -85,8 +85,8 @@ class User(BaseModel):
             "last_name": self.last_name,
             "email": self.email,
             "is_admin": self.is_admin,
-            "places": [place.toJSON() for place in self.places],
-            "reviews": [review.toJSON() for reviws in self.reviews],
+            "places": [place.toJSON() for place in self.places] if self.places else [],
+            "reviews": [review.toJSON() for reviews in self.reviews] if self.reviews else [],
             "created_at": str(self.created_at),
             "updated_at": str(self.updated_at),
         }

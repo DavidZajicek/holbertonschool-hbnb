@@ -38,17 +38,13 @@ class HBnBFacade:
         return self.user_repo.get_all()
 
     def update_user(self, user_id, user_data):
-        """Update an existing user"""
+        try:
+            self.user_repo.update(user_id, user_data)
+        except (KeyError, ValueError):
+            return None
         user = self.user_repo.get(user_id)
-        if not user:
-            raise ValueError("Invalid input data")
-        
-        for key, value in user_data.items():
-            setattr(user, key, value)
-
-        self.user_repo.update(user_id, user)
         return user
-    
+
     def delete_user(self, user_id):
         """Deletes an user by ID"""
         user = self.user_repo.get(user_id)

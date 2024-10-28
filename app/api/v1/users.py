@@ -59,27 +59,23 @@ class UserResource(Resource):
             return user.toJSON(), 200
         return {'error': 'User not found'}, 404
 
+    @api.expect(user_model, validate=True)
     @api.response(200, 'User updated successfully')
     @api.response(404, 'User not found')
     @api.response(400, "Invalid input data")
     def put(self, user_id):
         "Updates information of a User by ID"
-        user_data = api.payload
 
         user = facade.get_user(user_id)
         if not user:
-            return {'error': 'No user found'}, 404
+            return {'error': 'User not found'}, 400
+        
+        new_user = facade.update_user(user_id, api.payload)
 
-        try:
-            updated_user = facade.update_user(user_id, user_data)
-        except ValueError as e:
-            return {'error': str(e)}, 400
-
-        if updated_user:
-            return updated_user.toJSON(), 200
-
-        return {'error': 'Invalidad input data'}, 400
-
+        if not new_user:
+            return {'error': 'Invalid input data'}, 400
+        return new_user.toJSON()
+    
     @api.response(204, "User deleted successfully")
     @api.response(404, "User not found")
     def delete(self, user_id):
