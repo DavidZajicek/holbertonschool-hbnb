@@ -11,14 +11,12 @@ user_model = api.model('User', {
 })
 
 facade = HBnBFacade()
-# curl -X POST http://localhost:5000/api/v1/users/ -H "Content-Type: application/json" -d \
-#'{"first_name": "Amy", "last_name": "Smith", "email": "amy@example.com"}'
+
 @api.route('/')
 class UserList(Resource):
     @api.expect(user_model, validate=True)
     @api.response(201, 'User successfully created')
-    @api.response(400, 'Email already registered or Invalid input data')
-  #  @api.response(400, 'Invalid input data')
+    @api.response(400, 'Invalid input data')
     def post(self):
         """Register a new user"""
         user_data = api.payload
@@ -28,7 +26,10 @@ class UserList(Resource):
         if existing_user:
             return {'error': 'Email already registered'}, 400
 
-        new_user = facade.create_user(user_data)
+        try:
+            new_user = facade.create_user(user_data)
+        except ValueError as e:
+            return {'error': str(e)}, 400
         return {
             'id': new_user.id,
             'first_name': new_user.first_name,
@@ -36,7 +37,6 @@ class UserList(Resource):
             'email': new_user.email
             }, 201
 
-    # curl -X GET http://localhost:5000/api/v1/users/
     @api.response(200, 'List of users retrieved successfully')
     @api.response(404, 'No users found')
     def get(self):
@@ -45,17 +45,9 @@ class UserList(Resource):
         if not users:
             return {'error': 'No users found'}, 404
 
-        users_list = [{
-            'id': user.id, 
-            'first_name': user.first_name, 
-            'last_name': user.last_name, 
-            'email': user.email
-            } for user in users]
-
+        users_list = [user.toJSON() for user in users]
         return users_list, 200
 
-#User retrieval by ID
-#curl -X GET http://localhost:5000/api/v1/users/<user_id>
 @api.route('/<user_id>')
 class UserResource(Resource):
     @api.response(200, 'User details retrieved successfully')
@@ -63,37 +55,27 @@ class UserResource(Resource):
     def get(self, user_id):
         """Get user details by ID"""
         user = facade.get_user(user_id)
-        if not user:
-            return {'error': 'User not found'}, 404
-        return {
-            'id': user.id, 
-            'first_name': user.first_name, 
-            'last_name': user.last_name, 
-            'email': user.email
-            }, 200
-    #Updating user information
-    # curl -X PUT http://localhost:5000/api/v1/users/{user_id} -H "Content-Type: application/json" \
-    # -d '{"first_name": "Jane", "last_name": "Doe", "email": "jane.doe@example.com"}'
+        if user:
+            return user.toJSON(), 200
+        return {'error': 'User not found'}, 404
 
+    @api.expect(user_model, validate=True)
     @api.response(200, 'User updated successfully')
-    @api.response(404, 'Update cannot be processed')
+    @api.response(404, 'User not found')
+    @api.response(400, "Invalid input data")
     def put(self, user_id):
         "Updates information of a User by ID"
-        #Retrieve the updated data of the user
-        user_data = api.payload
 
         user = facade.get_user(user_id)
         if not user:
-            return {'error': 'No user found'}, 404
+            return {'error': 'User not found'}, 400
+        
+        new_user = facade.update_user(user_id, api.payload)
 
-        updated_user = facade.update_user(user_id, user_data)
-        return {
-            'id': updated_user.id,
-            'first_name': updated_user.first_name,
-            'last_name': updated_user.last_name,
-            'email': updated_user.email
-        }, 200
-
+        if not new_user:
+            return {'error': 'Invalid input data'}, 400
+        return new_user.toJSON()
+    
     @api.response(204, "User deleted successfully")
     @api.response(404, "User not found")
     def delete(self, user_id):
@@ -101,5 +83,5 @@ class UserResource(Resource):
         try:
             facade.delete_user(user_id)
             return {}, 204
-        except ValueError:
-            return {"Error": "User not found"}, 404
+        except ValueError as e:
+            return {"Error": str(e)}, 404

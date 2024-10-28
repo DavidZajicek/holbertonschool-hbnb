@@ -42,8 +42,10 @@ class InMemoryRepository(Repository):
 
     def update(self, obj_id, data):
         obj = self.get(obj_id)
-        if obj:
-            obj.update(data)
+        if not obj:
+            raise ValueError(f'Object with id {obj_id} not found.')
+        for key in data:
+            setattr(obj, key, data[key])
 
     def delete(self, obj_id):
         if obj_id in self._storage:
