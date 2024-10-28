@@ -14,7 +14,7 @@ class TestReviewModel(unittest.TestCase):
             last_name="User",
             email="test@test.com"
         )
-        
+
         self.place = Place(
             title="Test Place",
             description="Test Description",
@@ -23,7 +23,7 @@ class TestReviewModel(unittest.TestCase):
             longitude=-74.0060,
             owner=self.user
         )
-        
+
         self.review = Review(
             text="Great place!",
             rating=5,
@@ -100,10 +100,12 @@ class TestReviewEndpoints(unittest.TestCase):
         user_response = self.client.post('/api/v1/users/', json={
             "first_name": "Jane",
             "last_name": "Doe",
-            "email": "jane.doe@example.com"
+            "email": "jane_doe@mail.com"
         })
-        user_id = user_response.get_json()['id']
-        
+        self.assertEqual(user_response.status_code, 201, f"User creation failed: {user_response.get_json()}")
+        user_id = user_response.get_json().get('id')
+        self.assertIsNotNone(user_id, "User ID should not be None.")
+
         # Create a test place
         place_response = self.client.post('/api/v1/places/', json={
             "title": "Test Place",
@@ -114,7 +116,9 @@ class TestReviewEndpoints(unittest.TestCase):
             "owner_id": user_id,
             "amenities": []
         })
-        place_id = place_response.get_json()['id']
+        self.assertEqual(place_response.status_code, 201, f"Place creation failed: {place_response.get_json()}")
+        place_id = place_response.get_json().get('id')
+        self.assertIsNotNone(place_id, "Place ID should not be None.")
 
         # Create a review
         response = self.client.post('/api/v1/reviews/', json={
@@ -123,9 +127,45 @@ class TestReviewEndpoints(unittest.TestCase):
             "user_id": user_id,
             "place_id": place_id
         })
+        print("Review creation response JSON:", response.get_json())  # Debugging line
+
+        # Check for successful creation
         self.assertEqual(response.status_code, 201)
         self.assertEqual("Great place!", response.get_json()['text'])
         self.assertEqual(5, response.get_json()['rating'])
+
+    # def test_review_api_create(self):
+    #     """Test review creation through API"""
+    #     # Create a test user
+    #     user_response = self.client.post('/api/v1/users/', json={
+    #         "first_name": "Jane",
+    #         "last_name": "Doe",
+    #         "email": "jane.doe@example.com"
+    #     })
+    #     user_id = user_response.get_json()['id']
+
+    #     # Create a test place
+    #     place_response = self.client.post('/api/v1/places/', json={
+    #         "title": "Test Place",
+    #         "description": "Test Description",
+    #         "price": 100,
+    #         "latitude": 40.7128,
+    #         "longitude": -74.0060,
+    #         "owner_id": user_id,
+    #         "amenities": []
+    #     })
+    #     place_id = place_response.get_json()['id']
+
+    #     # Create a review
+    #     response = self.client.post('/api/v1/reviews/', json={
+    #         "text": "Great place!",
+    #         "rating": 5,
+    #         "user_id": user_id,
+    #         "place_id": place_id
+    #     })
+    #     self.assertEqual(response.status_code, 201)
+    #     self.assertEqual("Great place!", response.get_json()['text'])
+    #     self.assertEqual(5, response.get_json()['rating'])
 
     def test_review_api_crud_operations(self):
         """Test CRUD operations for reviews through API"""
@@ -136,7 +176,7 @@ class TestReviewEndpoints(unittest.TestCase):
             "email": "jane3.doe@example.com"
         })
         user_id = user_response.get_json()['id']
-        
+
         place_response = self.client.post('/api/v1/places/', json={
             "title": "Test Place",
             "description": "Test Description",
@@ -189,7 +229,7 @@ class TestReviewEndpoints(unittest.TestCase):
             "email": "jane4.doe@example.com"
         })
         user_id = user_response.get_json()['id']
-        
+
         place_response = self.client.post('/api/v1/places/', json={
             "title": "Test Place",
             "description": "Test Description",
