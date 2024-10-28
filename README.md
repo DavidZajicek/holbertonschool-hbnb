@@ -32,11 +32,15 @@ This file contains environment-specific setting definitions.
 
 ### 🔑 requirements.txt
 To install the requirements to run this project run the following command
-`pip install -r requirements.txt`
+```
+pip install -r requirements.txt
+```
 
 ### 👷🏼‍♀️ Run
 To run the project, run the following command while in the root directory
-`python3 run.py`
+```
+python3 run.py
+```
 
 ### 🛠 Usage
 Once the application is running, you can interact with the API through some tools like Postman or cURL.
@@ -52,7 +56,9 @@ curl http://127.0.0.1:5000/api/v1/places/
 
 ### 🌊 Test
 To test the project, run the following command while in the root directory
-`python3 -m unittest discover app.tests`
+```
+python3 -m unittest discover app.tests
+```
 
 ### 💻 Technologies Used
 `Python`: The core language used to develop the backend.
