@@ -38,12 +38,17 @@ class AmenityList(Resource):
         return {'id': new_amenity.id, 'name': new_amenity.name}, 201
 
     @api.response(200, 'List of amenities retrieved successfully')
+    @api.response(404, 'Amenites not found')
     def get(self):
         amenities = facade.get_all_amenities()
+        if not amenities:
+            return {'error': 'Amenities not found'}, 404
         return [{'id': amenity.id, 'name': amenity.name} for amenity in amenities], 200
 
 @api.route('/<amenity_id>')
 class AmenityResource(Resource):
+    @api.response(200, 'Amenity retrieved successfully')
+    @api.response(404, 'Amenity not found')
     # GET method
     def get(self, amenity_id):
         amenity = facade.get_amenity(amenity_id)
