@@ -1,6 +1,7 @@
 from datetime import datetime
-from sqlalchemy import Column, String, Float, Integer, ForeignKey, Table
+from sqlalchemy import Column, String, Float, ForeignKey, Table
 from sqlalchemy.orm import relationship, backref
+from sqlalchemy.ext.hybrid import hybrid_property
 from .base import Base, BaseModel
 from app.models.user import User
 
@@ -42,7 +43,7 @@ class Place(BaseModel):
         self.amenities = []  # relationship - List to store related amenities
 
     # --- Getters and Setters ---
-    @property
+    @hybrid_property
     def title(self):
         """ Returns value of property title """
         return self._title
@@ -57,7 +58,7 @@ class Place(BaseModel):
         else:
             raise ValueError("Invalid title length!")
 
-    @property
+    @hybrid_property
     def description(self):
         """ Returns value of property description """
         return self._description
@@ -68,7 +69,7 @@ class Place(BaseModel):
         # Can't think of any special checks to perform here tbh
         self._description = value
 
-    @property
+    @hybrid_property
     def price(self):
         """ Returns value of property price """
         return self._price
@@ -81,7 +82,7 @@ class Place(BaseModel):
         else:
             raise ValueError("Invalid value specified for price")
 
-    @property
+    @hybrid_property
     def latitude(self):
         """ Returns value of property latitude """
         return self._latitude
@@ -94,7 +95,7 @@ class Place(BaseModel):
         else:
             raise ValueError("Invalid value specified for Latitude")
 
-    @property
+    @hybrid_property
     def longitude(self):
         """ Returns value of property longitude """
         return self._longitude
@@ -107,7 +108,7 @@ class Place(BaseModel):
         else:
             raise ValueError("Invalid value specified for Longitude")
 
-    @property
+    @hybrid_property
     def owner(self):
         """ Returns value of property owner """
         return self._owner

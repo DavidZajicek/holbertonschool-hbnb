@@ -1,6 +1,7 @@
 from datetime import datetime
 from .base import BaseModel
 from sqlalchemy import Column, String
+from sqlalchemy.ext.hybrid import hybrid_property
 
 
 class Amenity(BaseModel):
@@ -15,7 +16,7 @@ class Amenity(BaseModel):
         self.name = name
 
     # --- Getters and Setters ---
-    @property
+    @hybrid_property
     def name(self):
         """ Returns value of property name """
         return self._name

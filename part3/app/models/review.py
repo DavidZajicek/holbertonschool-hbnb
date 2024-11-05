@@ -1,6 +1,7 @@
 from datetime import datetime
 from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.hybrid import hybrid_property
 from .base import BaseModel
 
 
@@ -27,7 +28,7 @@ class Review(BaseModel):
         self.user_id = user_id  # relationship - id of User who wrote the Review
 
     # --- Getters and Setters ---
-    @property
+    @hybrid_property
     def text(self):
         """ Returns value of property text """
         return self._text
@@ -38,7 +39,7 @@ class Review(BaseModel):
         # Can't think of any special checks to perform here tbh
         self._text = value
 
-    @property
+    @hybrid_property
     def rating(self):
         """ Returns value of property rating """
         return self._rating
@@ -51,7 +52,7 @@ class Review(BaseModel):
         else:
             raise ValueError("Invalid value specified for rating")
 
-    @property
+    @hybrid_property
     def user_id(self):
         """ Returns value of property user_id """
         return self._user_id
@@ -68,7 +69,7 @@ class Review(BaseModel):
         else:
             raise ValueError("Owner does not exist!")
 
-    @property
+    @hybrid_property
     def place_id(self):
         """ Returns value of property place_id """
         return self._place_id

@@ -130,12 +130,14 @@ class PlaceReviewList(Resource):
         output = []
 
         for review in facade.get_reviews_by_place(place_id):
+            print(review.id)
             output.append({
                 'id': str(review.id),
                 'text': review.text,
                 'rating': review.rating,
                 'user_id': review.user_id,
             })
+        print(facade.get_reviews_by_place(place_id))
 
         if len(output) == 0:
             return {'error': "Place not found"}, 400

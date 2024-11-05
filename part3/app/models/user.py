@@ -4,6 +4,7 @@ from datetime import datetime
 from .base import BaseModel
 from sqlalchemy import Column, String, Boolean
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.hybrid import hybrid_property
 from flask_bcrypt import Bcrypt
 
 bcrypt = Bcrypt()
@@ -38,7 +39,7 @@ class User(BaseModel):
     # --- Getters and Setters ---
     # Setters are actually called when values are assigned in the constructor!
 
-    @property
+    @hybrid_property
     def first_name(self):
         """Getter for prop first_name"""
         return self._first_name
@@ -53,7 +54,7 @@ class User(BaseModel):
         else:
             raise ValueError("Invalid first_name length!")
 
-    @property
+    @hybrid_property
     def last_name(self):
         """Getter for prop last_name"""
         return self._last_name
@@ -68,7 +69,7 @@ class User(BaseModel):
         else:
             raise ValueError("Invalid last_name length!")
 
-    @property
+    @hybrid_property
     def email(self):
         """Getter for prop email"""
         return self._email
@@ -100,7 +101,7 @@ class User(BaseModel):
         """Verifies if the provided password matches the hashed password."""
         return bcrypt.check_password_hash(self._password, password)
 
-    @property
+    @hybrid_property
     def is_admin(self):
         """Getter for prop is_admin"""
         return self._is_admin
