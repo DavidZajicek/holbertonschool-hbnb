@@ -13,7 +13,7 @@ amenity_model = api.model('Amenity', {
 user_model = api.model('User', {
     'first_name': fields.String(required=True, description='First name of the user'),
     'last_name': fields.String(required=True, description='Last name of the user'),
-    'email': fields.String(required=True, description='Email of the user'),
+    'email': fields.String(required=True, description='Email of the user', default='string@string'),
     'password': fields.String(required=True, description='Password of the user'),
 })
 
@@ -21,19 +21,23 @@ user_model = api.model('User', {
 review_model = api.model('Review', {
     'id': fields.String(description='Review ID'),
     'text': fields.String(description='Text of the review'),
-    'rating': fields.Integer(description='Rating of the place (1-5)'),
-    'user_id': fields.String(description='ID of the user')
+    'rating': fields.Integer(description='Rating of the place (1-5)', default=0),
+    'user_id': fields.String(description='ID of the user'),
 })
+
 
 place_model = api.model('Place', {
     'title': fields.String(required=True, description='Title of the place'),
     'description': fields.String(description='Description of the place'),
-    'price': fields.Float(required=True, description='Price per night'),
+    'price': fields.Float(required=True, description='Price per night', default=1.0),
     'latitude': fields.Float(required=True, description='Latitude of the place'),
     'longitude': fields.Float(required=True, description='Longitude of the place'),
     'owner_id': fields.String(required=True, description='ID of the owner'),
     'amenities': fields.List(fields.Nested(amenity_model), description='List of amenities'),
-    'reviews': fields.List(fields.Nested(review_model), description='List of reviews')
+})
+
+place_response = api.inherit('PlaceResponse', place_model, {
+    'reviews': fields.List(fields.Nested(review_model), description='List of reviews'),
 })
 
 # facade = HBnBFacade()
@@ -164,16 +168,36 @@ class PlaceResource(Resource):
         # curl -X PUT "http://127.0.0.1:5000/api/v1/places/<place_id>" -H "Content-Type: application/json" -H "Authorization: Bearer <token_goes_here>" -d '{"title": "Not So Cozy Apartment","description": "A terrible place to stay","price": 999.99}'
         """Update a place's information"""
         place_data = api.payload
-        wanted_keys_list = ['title', 'description', 'price']
+        wanted_keys_list = ['title', 'description', 'price', 'amenities']
 
         if len(place_data) != len(wanted_keys_list) or not all(key in wanted_keys_list for key in place_data):
             return {'error': 'Invalid input data - required attributes missing'}, 400
 
-        # Check that place exists first before updating them
+        amenities = facade.get_amenities_by_place(place_id)
+        try:
+            for amenity in place_data['amenities']:
+                amenity_by_id = facade.get_amenity(amenity['id'])
+                amenity_by_name = facade.get_amenity_by_name(amenity['name'])
+
+                if amenity_by_id != amenity_by_name:
+                    raise ValueError(
+                        f"id and name do not match existing amenity")
+
+                if not amenity_by_id:
+                    raise ValueError('No existing amenity found ')
+                if amenity_by_id not in amenities:
+                    amenities.append(amenity_by_id)
+        except (ValueError) as exc:
+            return {'error': 'Invalid input data', 'exception': str(exc)}, 400
+
+            # Check that place exists first before updating them
         place = facade.get_place(place_id)
         if place:
             try:
+                del place_data['amenities']
                 facade.update_place(place_id, place_data)
+                for amenity in amenities:
+                    facade.create_place_amenity_link(place_id, amenity.id)
             except ValueError as error:
                 return {'error': "Setter validation failure: {}".format(error)}, 400
 

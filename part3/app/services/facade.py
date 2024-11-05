@@ -61,6 +61,9 @@ class HBnBFacade:
     def update_amenity(self, amenity_id, amenity_data):
         self.amenity_repo.update(amenity_id, amenity_data)
 
+    def create_place_amenity_link(self, place_id, amenity_id):
+        return self.amenity_repo.create_place_amenity_link(place_id, amenity_id)
+
     # --- Places ---
 
     def create_place(self, place_data):

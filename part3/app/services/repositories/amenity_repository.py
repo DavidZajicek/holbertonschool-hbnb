@@ -12,4 +12,7 @@ class AmenityRepository(SQLAlchemyRepository):
         return db_session.query(self.model).\
             join(place_amenity).filter_by(place_id=place_id).all()
 
-        return db_session.query('place_amenity').filter_by(place_id=place_id).all()
+    def create_place_amenity_link(self, place_id, amenity_id):
+        # TODO: actually do the thing
+        print(f'place_id: {place_id}, amenity_id: {amenity_id}')
+        pass
