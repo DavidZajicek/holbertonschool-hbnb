@@ -8,10 +8,12 @@ api = Namespace('users', description='User operations')
 user_model = api.model('User', {
     'first_name': fields.String(required=True, description='First name of the user'),
     'last_name': fields.String(required=True, description='Last name of the user'),
-    'email': fields.String(required=True, description='Email of the user')
+    'email': fields.String(required=True, description='Email of the user'),
+    'password': fields.String(required=True, description='Password of the user'),
 })
 
 # facade = HBnBFacade()
+
 
 @api.route('/')
 class UserList(Resource):
@@ -22,7 +24,6 @@ class UserList(Resource):
     @api.response(400, 'Setter validation failure')
     def post(self):
         # curl -X POST "http://127.0.0.1:5000/api/v1/users/" -H "Content-Type: application/json" -d '{"first_name": "John","last_name": "Doe","email": "john.doe@example.com"}'
-
         """Register a new user"""
         user_data = api.payload
 
@@ -39,8 +40,8 @@ class UserList(Resource):
         new_user = None
         try:
             new_user = facade.create_user(user_data)
-        except ValueError as error:
-            return { 'error': "Setter validation failure: {}".format(error) }, 400
+        except (ValueError, TypeError) as error:
+            return {'error': "Setter validation failure: {}".format(error)}, 400
 
         return {'id': str(new_user.id), 'message': 'User created successfully'}, 201
 
@@ -59,6 +60,7 @@ class UserList(Resource):
             })
 
         return output, 200
+
 
 @api.route('/<user_id>')
 class UserResource(Resource):
@@ -80,7 +82,7 @@ class UserResource(Resource):
     def put(self, user_id):
         """ Update user specified by id """
         user_data = api.payload
-        wanted_keys_list = ['first_name', 'last_name', 'email']
+        wanted_keys_list = ['first_name', 'last_name', 'email', 'password']
 
         # Ensure that user_data contains only what we want (e.g. first_name, last_name, email)
         # https://stackoverflow.com/questions/10995172/check-if-list-of-keys-exist-in-dictionary
@@ -93,7 +95,7 @@ class UserResource(Resource):
             try:
                 facade.update_user(user_id, user_data)
             except ValueError as error:
-                return { 'error': "Setter validation failure: {}".format(error) }, 400
+                return {'error': "Setter validation failure: {}".format(error)}, 400
 
             return {'message': 'User updated successfully'}, 200
 

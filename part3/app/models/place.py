@@ -1,15 +1,25 @@
-import uuid
+
 from datetime import datetime
+from sqlalchemy import Column, String, Float
+from sqlalchemy.orm import relationship
+from .base import BaseModel
 from app.models.user import User
 
-class Place:
+
+class Place(BaseModel):
+    __tablename__ = 'places'
+
+    _title = Column('title', String(100), nullable=False)
+    _description = Column('description', String(), nullable=False)
+    _price = Column('price', Float, nullable=False)
+    _latitude = Column('latitude', Float, nullable=False)
+    _longitude = Column('longitude', Float, nullable=False)
+
     def __init__(self, title, description, price, latitude, longitude, owner):
+        super().__init__()
         if title is None or description is None or price is None or latitude is None or longitude is None or owner is None:
             raise ValueError("Required attributes not specified!")
 
-        self.id = str(uuid.uuid4())
-        self.created_at = datetime.now()
-        self.updated_at = datetime.now()
         self.title = title
         self.description = description
         self.price = price

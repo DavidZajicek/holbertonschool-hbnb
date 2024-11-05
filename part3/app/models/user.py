@@ -1,40 +1,36 @@
 """ User model """
-
-import uuid
 import re
 from datetime import datetime
+from .base import BaseModel
+from sqlalchemy import Column, String, Boolean
+from sqlalchemy.orm import relationship
+from flask_bcrypt import Bcrypt
 
-class User:
+bcrypt = Bcrypt()
+
+
+class User(BaseModel):
     """ User class """
-    # NOTE: The attribute declarations below can be considered redundant
-    # but I still like to do it out of habit.
+    __tablename__ = 'users'
 
-    # id = None
-    # first_name = ""
-    # last_name = ""
-    # email = ""
-    # is_admin = False
-    # created_at = None
-    # updated_at = None
-    # places = []
-    # reviews = []
+    _first_name = Column("first_name", String(50), nullable=False)
+    _last_name = Column("last_name", String(50), nullable=False)
+    _email = Column("email", String(120), nullable=False, unique=True)
+    _password = Column("password", String(128), nullable=False)
+    _is_admin = Column("is_admin", Boolean, default=False)
 
-    def __init__(self, first_name, last_name, email, is_admin = False):
-        # NOTE: Attributes that don't already exist will be
-        # created when called in the constructor
-
+    def __init__(self, first_name, last_name, email, password, is_admin=False):
+        super().__init__()
         if first_name is None or last_name is None or email is None:
             raise ValueError("Required attributes not specified!")
 
-        self.id = str(uuid.uuid4())
-        self.created_at = datetime.now()
-        self.updated_at = datetime.now()
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
+        self.hash_password(password)
         self.is_admin = is_admin
-        self.places = [] # List to store user-owned places
-        self.reviews = [] # List to store user-written reviews
+        self.places = []  # List to store user-owned places
+        self.reviews = []  # List to store user-written reviews
 
     # --- Getters and Setters ---
     # Setters are actually called when values are assigned in the constructor!
@@ -81,7 +77,8 @@ class User:
         from app.services import facade
 
         # add a simple regex check for email format. Nothing too fancy.
-        is_valid_email = len(value.strip()) > 0 and re.search("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$", value)
+        is_valid_email = len(value.strip()) > 0 and re.search(
+            "^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$", value)
         email_exists = facade.get_user_by_email(value.strip())
         if is_valid_email and not email_exists:
             self._email = value
@@ -90,6 +87,15 @@ class User:
                 raise ValueError("Email already exists!")
 
             raise ValueError("Invalid email format!")
+
+    def hash_password(self, password):
+        """Hashes the password before storing it."""
+        self._password = bcrypt.generate_password_hash(
+            password).decode('utf-8')
+
+    def verify_password(self, password):
+        """Verifies if the provided password matches the hashed password."""
+        return bcrypt.check_password_hash(self._password, password)
 
     @property
     def is_admin(self):
@@ -104,8 +110,8 @@ class User:
         else:
             raise ValueError("Invalid is_admin value!")
 
-
     # --- Methods ---
+
     def save(self):
         """Update the updated_at timestamp whenever the object is modified"""
         self.updated_at = datetime.now()

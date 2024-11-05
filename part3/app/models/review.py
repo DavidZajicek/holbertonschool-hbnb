@@ -1,18 +1,24 @@
-import uuid
 from datetime import datetime
+from sqlalchemy import Column, String, Integer
+from sqlalchemy.orm import relationship
+from .base import BaseModel
 
-class Review:
+
+class Review(BaseModel):
+    __tablename__ = 'reviews'
+
+    _text = Column('text', String(), nullable=False)
+    _rating = Column('rating', Integer, nullable=False)
+
     def __init__(self, text, rating, place_id, user_id):
+        super().__init__()
         if text is None or rating is None or place_id is None or user_id is None:
             raise ValueError("Required attributes not specified!")
 
-        self.id = str(uuid.uuid4())
-        self.created_at = datetime.now()
-        self.updated_at = datetime.now()
         self.text = text
         self.rating = rating
-        self.place_id = place_id # relationship - id of Place that the Review is for
-        self.user_id = user_id # relationship - id of User who wrote the Review
+        self.place_id = place_id  # relationship - id of Place that the Review is for
+        self.user_id = user_id  # relationship - id of User who wrote the Review
 
     # --- Getters and Setters ---
     @property

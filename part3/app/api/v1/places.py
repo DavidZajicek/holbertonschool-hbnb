@@ -11,10 +11,10 @@ amenity_model = api.model('Amenity', {
 })
 
 user_model = api.model('User', {
-    'id': fields.String(description='User ID'),
-    'first_name': fields.String(description='First name of the owner'),
-    'last_name': fields.String(description='Last name of the owner'),
-    'email': fields.String(description='Email of the owner')
+    'first_name': fields.String(required=True, description='First name of the user'),
+    'last_name': fields.String(required=True, description='Last name of the user'),
+    'email': fields.String(required=True, description='Email of the user'),
+    'password': fields.String(required=True, description='Password of the user'),
 })
 
 # Adding the review model
@@ -39,6 +39,7 @@ place_model = api.model('Place', {
 
 # facade = HBnBFacade()
 
+
 @api.route('/')
 class PlaceList(Resource):
     @api.expect(place_model)
@@ -51,19 +52,19 @@ class PlaceList(Resource):
         # curl -X POST "http://127.0.0.1:5000/api/v1/users/" -H "Content-Type: application/json" -d '{"first_name": "John","last_name": "Doe","email": "john.doe@example.com"}'
 
         # curl -X POST "http://127.0.0.1:5000/api/v1/places/" -H "Content-Type: application/json" -d '{"title": "Cozy Apartment","description": "A nice place to stay","price": 100.0,"latitude": 37.7749,"longitude": -122.4194,"owner_id": ""}'
-
         """Register a new place"""
         places_data = api.payload
-        wanted_keys_list = ['title', 'description', 'price', 'latitude', 'longitude', 'owner_id']
+        wanted_keys_list = ['title', 'description',
+                            'price', 'latitude', 'longitude', 'owner_id']
 
         # Check whether the keys are present
         if not all(name in wanted_keys_list for name in places_data):
-            return { 'error': "Invalid input data" }, 400
+            return {'error': "Invalid input data"}, 400
 
         # check that user exists
         user = facade.get_user(str(places_data.get('owner_id')))
         if not user:
-            return { 'error': "Invalid input data - user does not exist" }, 400
+            return {'error': "Invalid input data - user does not exist"}, 400
 
         # the try catch is here in case setter validation fails
         new_place = None
@@ -74,7 +75,7 @@ class PlaceList(Resource):
 
             new_place = facade.create_place(places_data)
         except ValueError as error:
-            return { 'error': "Setter validation failure: {}".format(error) }, 400
+            return {'error': "Setter validation failure: {}".format(error)}, 400
 
         output = {
             'id': str(new_place.id),
@@ -102,6 +103,7 @@ class PlaceList(Resource):
             })
 
         return output, 200
+
 
 @api.route('/<place_id>')
 class PlaceResource(Resource):
@@ -149,7 +151,6 @@ class PlaceResource(Resource):
     @api.response(404, 'Place not found')
     def put(self, place_id):
         # curl -X PUT "http://127.0.0.1:5000/api/v1/places/<place_id>" -H "Content-Type: application/json" -H "Authorization: Bearer <token_goes_here>" -d '{"title": "Not So Cozy Apartment","description": "A terrible place to stay","price": 999.99}'
-
         """Update a place's information"""
         place_data = api.payload
         wanted_keys_list = ['title', 'description', 'price']
@@ -163,7 +164,7 @@ class PlaceResource(Resource):
             try:
                 facade.update_place(place_id, place_data)
             except ValueError as error:
-                return { 'error': "Setter validation failure: {}".format(error) }, 400
+                return {'error': "Setter validation failure: {}".format(error)}, 400
 
             return {'message': 'Place updated successfully'}, 200
 
