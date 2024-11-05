@@ -14,6 +14,7 @@ review_model = api.model('Review', {
 
 # facade = HBnBFacade()
 
+
 @api.route('/')
 class ReviewList(Resource):
     @api.expect(review_model)
@@ -26,24 +27,24 @@ class ReviewList(Resource):
 
         # check that required attributes are present
         if not all(name in wanted_keys_list for name in review_data):
-            return { 'error': "Invalid input data - required attributes missing" }, 400
+            return {'error': "Invalid input data - required attributes missing"}, 400
 
         # check that user exists
         user = facade.get_user(str(review_data.get('user_id')))
         if not user:
-            return { 'error': "Invalid input data - user does not exist" }, 400
+            return {'error': "Invalid input data - user does not exist"}, 400
 
         # check that place exists
         place = facade.get_place(str(review_data.get('place_id')))
         if not place:
-            return { 'error': "Invalid input data - place does not exist" }, 400
+            return {'error': "Invalid input data - place does not exist"}, 400
 
         # finally, create the review
         new_review = None
         try:
             new_review = facade.create_review(review_data)
         except ValueError as error:
-            return { 'error': "Setter validation failure: {}".format(error) }, 400
+            return {'error': "Setter validation failure: {}".format(error)}, 400
 
         return {'id': str(new_review.id), 'message': 'Review created successfully'}, 201
 
@@ -61,6 +62,7 @@ class ReviewList(Resource):
             })
 
         return output, 200
+
 
 @api.route('/<review_id>')
 class ReviewResource(Resource):
@@ -93,7 +95,7 @@ class ReviewResource(Resource):
 
         # check that required attributes are present
         if not all(name in wanted_keys_list for name in review_data):
-            return { 'error': "Invalid input data - required attributes missing" }, 400
+            return {'error': "Invalid input data - required attributes missing"}, 400
 
         # Check that place exists first before updating them
         review = facade.get_review(review_id)
@@ -101,7 +103,7 @@ class ReviewResource(Resource):
             try:
                 facade.update_review(review_id, review_data)
             except ValueError as error:
-                return { 'error': "Setter validation failure: {}".format(error) }, 400
+                return {'error': "Setter validation failure: {}".format(error)}, 400
 
             return {'message': 'Review updated successfully'}, 200
 
@@ -114,9 +116,10 @@ class ReviewResource(Resource):
         try:
             facade.delete_review(review_id)
         except ValueError:
-            return { 'error': "Review not found" }, 400
+            return {'error': "Review not found"}, 400
 
         return {'message': 'Review deleted successfully'}, 200
+
 
 @api.route('/places/<place_id>/reviews')
 class PlaceReviewList(Resource):
@@ -124,24 +127,40 @@ class PlaceReviewList(Resource):
     @api.response(404, 'Place not found')
     def get(self, place_id):
         """Get all reviews for a specific place"""
-        # I'm going to do this the worst possible way:
-        # 1. grab all the reviews records (lol)
-        # 2. iterate them all through a loop while searching for the place_id
-        # 3. save the ones with the place_id in an array
-        # 4. print it out
-
-        all_reviews = facade.get_all_reviews()
         output = []
 
-        for review in all_reviews:
-            if review.place_id == place_id:
-                output.append({
-                    'id': str(review.id),
-                    'text': review.text,
-                    'rating': review.rating
-                })
+        for review in facade.get_reviews_by_place(place_id):
+            output.append({
+                'id': str(review.id),
+                'text': review.text,
+                'rating': review.rating,
+                'user_id': review.user_id,
+            })
 
         if len(output) == 0:
-            return { 'error': "Place not found" }, 400
+            return {'error': "Place not found"}, 400
+
+        return output, 200
+
+
+@api.route('/users/<user_id>/reviews')
+class UserReviewList(Resource):
+    @api.response(200, 'List of reviews by the user retrieved successfully')
+    @api.response(404, 'User not found')
+    def get(self, user_id):
+        """Get all reviews for a specific user"""
+
+        output = []
+
+        for review in facade.get_reviews_by_user(user_id):
+            output.append({
+                'id': str(review.id),
+                'text': review.text,
+                'rating': review.rating,
+                'place_id': review.place_id,
+            })
+
+        if len(output) == 0:
+            return {'error': "User not found"}, 400
 
         return output, 200

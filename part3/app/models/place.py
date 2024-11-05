@@ -1,19 +1,31 @@
-
 from datetime import datetime
-from sqlalchemy import Column, String, Float
-from sqlalchemy.orm import relationship
-from .base import BaseModel
+from sqlalchemy import Column, String, Float, Integer, ForeignKey, Table
+from sqlalchemy.orm import relationship, backref
+from .base import Base, BaseModel
 from app.models.user import User
+
+
+place_amenity = Table('place_amenity', Base.metadata,
+                      Column('place_id', String(60), ForeignKey(
+                          'places.id'), primary_key=True),
+                      Column('amenity_id', String(60), ForeignKey(
+                          'amenities.id'), primary_key=True)
+                      )
 
 
 class Place(BaseModel):
     __tablename__ = 'places'
 
     _title = Column('title', String(100), nullable=False)
-    _description = Column('description', String(), nullable=False)
+    _description = Column('description', String(128), nullable=False)
     _price = Column('price', Float, nullable=False)
     _latitude = Column('latitude', Float, nullable=False)
     _longitude = Column('longitude', Float, nullable=False)
+    owner_id = Column(String(60), ForeignKey('users.id'), nullable=False)
+    user = relationship('User', back_populates='places')
+    reviews = relationship('Review', back_populates='place', lazy=True)
+    amenities = relationship('Amenity', secondary=place_amenity, lazy='subquery',
+                             backref=backref('places', lazy=True))
 
     def __init__(self, title, description, price, latitude, longitude, owner):
         super().__init__()
@@ -104,6 +116,7 @@ class Place(BaseModel):
     def owner(self, value):
         """Setter for prop owner"""
         if isinstance(value, User):
+            self.owner_id = value.id
             self._owner = value
         else:
             raise ValueError("Invalid object type passed in for owner!")

@@ -19,6 +19,9 @@ class User(BaseModel):
     _password = Column("password", String(128), nullable=False)
     _is_admin = Column("is_admin", Boolean, default=False)
 
+    reviews = relationship('Review', back_populates='user', lazy=True)
+    places = relationship('Place', back_populates='user', lazy=True)
+
     def __init__(self, first_name, last_name, email, password, is_admin=False):
         super().__init__()
         if first_name is None or last_name is None or email is None:

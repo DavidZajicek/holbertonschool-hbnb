@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import Column, String, Integer
+from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 from .base import BaseModel
 
@@ -7,8 +7,14 @@ from .base import BaseModel
 class Review(BaseModel):
     __tablename__ = 'reviews'
 
-    _text = Column('text', String(), nullable=False)
+    _text = Column('text', String(50), nullable=False)
     _rating = Column('rating', Integer, nullable=False)
+    _user_id = Column('user_id', String(60),
+                      ForeignKey('users.id'), nullable=False)
+    _place_id = Column('place_id', String(60),
+                       ForeignKey('places.id'), nullable=False)
+    user = relationship('User', back_populates='reviews')
+    place = relationship('Place', back_populates='reviews')
 
     def __init__(self, text, rating, place_id, user_id):
         super().__init__()

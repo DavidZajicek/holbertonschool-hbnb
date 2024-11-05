@@ -1,7 +1,6 @@
 from datetime import datetime
 from .base import BaseModel
 from sqlalchemy import Column, String
-from sqlalchemy.orm import relationship
 
 
 class Amenity(BaseModel):

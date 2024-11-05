@@ -1,11 +1,13 @@
-from app.services.repositories.user_repository import UserRepository
-from app.services.repositories.amenity_repository import AmenityRepository
-from app.services.repositories.place_repository import PlaceRepository
-from app.services.repositories.review_repository import ReviewRepository
-from app.models.user import User
-from app.models.amenity import Amenity
-from app.models.place import Place
-from app.models.review import Review
+# from app.services.repositories.user_repository import UserRepository
+# from app.services.repositories.amenity_repository import AmenityRepository
+# from app.services.repositories.place_repository import PlaceRepository
+# from app.services.repositories.review_repository import ReviewRepository
+# from app.models.user import User
+# from app.models.amenity import Amenity
+# from app.models.place import Place
+# from app.models.review import Review
+from app.services.repositories import UserRepository, AmenityRepository, PlaceRepository, ReviewRepository
+from app.models import User, Amenity, Place, Review
 
 
 class HBnBFacade:
@@ -42,6 +44,9 @@ class HBnBFacade:
     def get_amenity_by_name(self, name):
         return self.amenity_repo.get_by_attribute('name', name)
 
+    def get_amenities_by_place(self, place_id):
+        return self.amenity_repo.get_amenities_by_place(place_id)
+
     def create_amenity(self, amenity_data):
         amenity = Amenity(**amenity_data)
         self.amenity_repo.add(amenity)
@@ -66,6 +71,9 @@ class HBnBFacade:
     def get_place(self, place_id):
         return self.place_repo.get(place_id)
 
+    def get_places_by_owner(self, owner_id):
+        return self.place_repo.get_places_by_owner(owner_id)
+
     def get_all_places(self):
         return self.place_repo.get_all()
 
@@ -86,7 +94,10 @@ class HBnBFacade:
         return self.review_repo.get_all()
 
     def get_reviews_by_place(self, place_id):
-        return self.review_repo.get_by_attribute('place_id', place_id)
+        return self.review_repo.get_reviews_by_place(place_id)
+
+    def get_reviews_by_user(self, user_id):
+        return self.review_repo.get_reviews_by_user(user_id)
 
     def update_review(self, review_id, review_data):
         self.review_repo.update(review_id, review_data)

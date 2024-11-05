@@ -32,7 +32,6 @@ place_model = api.model('Place', {
     'latitude': fields.Float(required=True, description='Latitude of the place'),
     'longitude': fields.Float(required=True, description='Longitude of the place'),
     'owner_id': fields.String(required=True, description='ID of the owner'),
-    'owner': fields.Nested(user_model, description='Owner of the place'),
     'amenities': fields.List(fields.Nested(amenity_model), description='List of amenities'),
     'reviews': fields.List(fields.Nested(review_model), description='List of reviews')
 })
@@ -100,6 +99,7 @@ class PlaceList(Resource):
                 'title': place.title,
                 'latitude': place.latitude,
                 'longitude': place.longitude,
+                'owner_id': place.owner_id,
             })
 
         return output, 200
@@ -116,15 +116,25 @@ class PlaceResource(Resource):
         if not place:
             return {'error': 'Place not found'}, 404
 
-        owner = place.owner
+        owner = facade.get_user(place.owner_id)
         if not owner:
             return {'error': 'Place owner not found'}, 404
 
         amenities_list = []
-        for amenity in place.amenities:
+        for amenity in facade.get_amenities_by_place(place.id):
             amenities_list.append({
                 'id': str(amenity.id),
                 'name': amenity.name
+            })
+
+        reviews_list = []
+        for review in facade.get_reviews_by_place(place.id):
+            reviews_list.append({
+                'id': str(review.id),
+                'text': review.text,
+                'rating': review.rating,
+                'place_id': review.place_id,
+                'user_id': review.user_id,
             })
 
         output = {
@@ -139,7 +149,8 @@ class PlaceResource(Resource):
                 'last_name': owner.last_name,
                 'email': owner.email
             },
-            'amenities': amenities_list
+            'amenities': amenities_list,
+            'reviews': reviews_list,
         }
 
         return output, 200
