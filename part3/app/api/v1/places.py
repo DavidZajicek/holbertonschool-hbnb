@@ -123,6 +123,7 @@ class PlaceList(Resource):
             output.append({
                 'id': str(place.id),
                 'title': place.title,
+                'price': place.price,
                 'latitude': place.latitude,
                 'longitude': place.longitude,
                 'owner_id': place.owner_id,
@@ -167,6 +168,7 @@ class PlaceResource(Resource):
             'id': str(place.id),
             'title': place.title,
             'description': place.description,
+            'price': place.price,
             'latitude': place.latitude,
             'longitude': place.longitude,
             'owner': {
